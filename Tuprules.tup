@@ -6,6 +6,7 @@ LD = $(CXX)
 
 CPPFLAGS += -O0
 CPPFLAGS += -g
+CPPFLAGS += -std=c++11
 
 LDFLAGS =
 
