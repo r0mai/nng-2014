@@ -1,1 +1,13 @@
 .gitignore
+
+CC = gcc
+CXX = g++
+LD = $(CXX)
+
+CPPFLAGS += -O0
+CPPFLAGS += -g
+
+LDFLAGS =
+
+!cxx = |> ^ CXX %f^ $(CXX) $(CPPFLAGS) -c %f -o %o |> %B.o
+!linker = |> ^ LD %o^ $(LD) $(LDFLAGS) %f -o %o |>
