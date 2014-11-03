@@ -3,3 +3,4 @@ include_rules
 
 : foreach *.cpp |> !cxx |>
 : *.o |> !linker |> tv
+: foreach week*.txt | tv |> ./tv < %f > %o |> %B.out
