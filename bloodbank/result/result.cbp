@@ -11,6 +11,7 @@
 				<Option object_output="/home/qqcs/Asztal/nng_2014/nng-2014/bloodbank/result/.objs" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="all" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
@@ -23,7 +24,9 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="main.cpp" />
+		<Unit filename="bloodbank_api.h" />
+		<Unit filename="bloodbank_api_test.cpp" />
+		<Unit filename="bloodbank_tester.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

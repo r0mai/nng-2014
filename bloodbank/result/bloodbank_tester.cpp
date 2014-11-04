@@ -53,12 +53,6 @@ struct IVSet
         return setEnds.size() ? setEnds.back() : 0;
     }
 
-    inline void setSetEnds()
-    {
-        setEnds.resize(0);
-        std::partial_sum( sizes.begin() , sizes.end() , std::back_inserter( setEnds ) );
-    }
-
     inline void add( const U& elem )
     {
         if( setEnds.size() && begins.back() + sizes.back() == elem )
@@ -80,6 +74,9 @@ void runtests(BloodBank& bank)
 {
     const U N = bank.getNumberOfSamples();
     const U M = N / 10; // max!!
+
+    if( !M ) M = 1;
+
     U need = std::ceil( N * 0.8 );
 
     double K = 2.;
@@ -98,7 +95,7 @@ void runtests(BloodBank& bank)
         U number = testnum;
 
         Batch* batch = bank.createBatch();
-
+        /*
         std::cerr << "::batch:" << (int)c
                   << "::  MBB:" << M
                   << "::    K:" << K
@@ -107,11 +104,11 @@ void runtests(BloodBank& bank)
                   << ":: dbps:" << db / ( M * K )
                   << "::biSet:" << db - ( db / K )
                   << ":: need:" << need
-                  << std::endl;
+                  << std::endl;*/
         if( db - ( db / K ) > need )
         {
             number = M + std::ceil( need * M * K / db );
-            std::cerr << "simplY!!! to " << number << std::endl;
+            /*std::cerr << "simplY!!! to " << number << std::endl;*/
         }
 
         for( U i = 1 ; i <= number ; ++i )

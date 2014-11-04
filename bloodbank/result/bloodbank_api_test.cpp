@@ -13,7 +13,7 @@
 
 class BatchImp : public Batch
 {
-	friend class BloodBankImp; 
+	friend class BloodBankImp;
 
 	struct Test
 	{
@@ -40,7 +40,7 @@ public:
 
 size_t BatchImp::addTest()
 {
-	mTests.push_back(BatchImp::Test());	
+	mTests.push_back(BatchImp::Test());
 
 	return mTests.size()-1;
 }
@@ -86,7 +86,7 @@ class BloodBankImp : public BloodBank
 	void loadSamples(const std::string& filename);
 
 public:
-	BloodBankImp(const std::string& filename); 
+	BloodBankImp(const std::string& filename);
 	virtual ~BloodBankImp() {}
 
 	virtual size_t getNumberOfSamples() const;
@@ -135,8 +135,8 @@ void BloodBankImp::markSafe( size_t sampleID )
 
 void BloodBankImp::evaluateBatch( Batch* batch )
 {
-	++mBatchCount;
 	assert(mBatchCount < MAX_BATCH_COUNT);
+	++mBatchCount;
 	BatchImp& btch= *static_cast<BatchImp*>(batch);
 	for(BatchImp::tests_t::iterator t= btch.mTests.begin(); t != btch.mTests.end(); ++t)
 	{
@@ -183,7 +183,7 @@ size_t BloodBankImp::done(bool quiet)
 			if (s->BadBlood)
 			{
 				++bad;
-			} 
+			}
 		}
 	}
 	if (!quiet)
