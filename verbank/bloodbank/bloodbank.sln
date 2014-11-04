@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bloodbank", "bloodbank.vcxproj", "{7CDEEC4D-65B3-4355-80CA-4400818E6BAA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7CDEEC4D-65B3-4355-80CA-4400818E6BAA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7CDEEC4D-65B3-4355-80CA-4400818E6BAA}.Debug|Win32.Build.0 = Debug|Win32
+		{7CDEEC4D-65B3-4355-80CA-4400818E6BAA}.Release|Win32.ActiveCfg = Release|Win32
+		{7CDEEC4D-65B3-4355-80CA-4400818E6BAA}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

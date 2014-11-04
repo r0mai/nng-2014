@@ -1,0 +1,36 @@
+
+Logout
+E-mail
+FELADATOK
+Subject VÉRBANK
+Tisztelt Guru!
+
+Csatoltam a kért fájlokat és egy egyszerű teszt implementációját a környezetnek, amivel a programokat ellenőrizni szoktuk mielőtt éles környezetbe engedjük. Valamint csatoltam a jelenlegi meglehetősen pazarló megoldás implementációját is, ami 100%-os pontossággal működik, és már a második óra végén megoldást ad. Remélem tudsz rajta optimalizálni. Arra kérlek, hogy a bloodbank_tester.cpp fájlt küldd vissza kész algoritmussal. Figyelj, hogy a gép amire fordítjuk elég speciális, így csak a standard c/c++ és stl header fájlokat használhatod.
+
+Üdvözlettel,
+Dr. Aku Lajos
+
+
+bloodbank.zip
+Tisztelt Doktor úr!
+
+Kérem küldd el a program által használt API-kat, amiket használni tudok a program megvalósításához.
+
+Béke veled,
+Guru
+
+
+Kedves István!
+
+Mint azt bizonyára tudod napjaink kicsapongó életmódja miatt egyre gyakoribbak a HIV jellegű megbetegedések. Amíg a szigorú erkölcsös élet újra divatba nem jön, nekünk a vérbankban külön figyelmet kell fordítanunk arra, hogy a HIV pozitív mintákat kiszűrjük. Szerencsére a minták maximum 10%-a fertőzött, és van egy tesztünk, ami akár egyetlen csepp vérből is meg tudja állapítani, hogy egy minta HIV pozitív-e. Sőt akár 100000x-es hígításban is kimutatja a nem használható vért. Tehát ha összekeverünk 100000 jó mintát és egy rosszat, még akkor is kimutatja a fertőzést. A baj, hogy a teszt meglehetősen drága és 1 óráig tart elvégezni egy mintán. Természetesen több mintát is tesztelhetünk párhuzamosan, így akár nagyon sok vért tudunk egyszerre tesztelni.
+
+A feladat, amire fel szeretnélek kérni az lenne, hogy írj egy programot, ami összeállítja a teszteket és vezérli a vér tesztelő gépünket. Mivel egyszerre általában elég sok vér érkezik be hozzánk és rövid idő alatt kell feldolgoznunk, kénytelenek voltunk a tesztelést teljesen automatizálni. Mindössze 3 óra áll rendelkezésre a beérkezéstől az osztályozásig, így összesen háromszor tudunk mintákat tesztelni. Ez idő alatt kell megjelölni, hogy melyik vér biztonságos, és feldolgozható. Amelyik nem biztonságos azt a rendszer automatikusan kidobja. Induláskor egyetlen mintát sem tekintünk biztonságosnak. A harmadik óra végére a minták legalább 80%-át biztonságosnak kell jelölni, úgy hogy egyetlen rossz minta se legyen biztonságosnak nyilvánítva, hogy elfogadható legyen az eredmény. Igen ez azt jelenti, hogy néha jó vért is kidobunk, de ennek a mértéke nem haladhatja meg a 10%-ot.
+
+Azt szeretném, hogy a program a lehető legkevesebb tesztet használja fel, miközben betartja a maximálisan 20%-a kidobott vér szabályt.
+
+Segítségét előre is köszönöm,
+Dr. Aku Lajos
+
+
+File
+Desktop
