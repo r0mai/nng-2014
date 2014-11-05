@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 
+#include <boost/foreach.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 
@@ -44,7 +45,7 @@ edge_property& get_edge_property(edge_descriptor edge, graph_t& graph) {
     return boost::get(edge_property_tag(), graph, edge);
 }
 
-graph_t createGraph(const tiles_t& tiles) {
+graph_t create_graph(const tiles_t& tiles) {
     typedef std::vector<std::vector<vertex_descriptor>> vertex_matrix_t;
 
     unsigned rows = tiles[0].size();
@@ -71,6 +72,16 @@ graph_t createGraph(const tiles_t& tiles) {
     return graph;
 }
 
+graph_t get_color_graph(graph_t graph, int color) {
+    BOOST_FOREACH(vertex_descriptor vertex, boost::vertices(graph)) {
+        if (get_vertex_property(vertex, graph).color != color) {
+            clear_vertex(vertex, graph);
+            remove_vertex(vertex, graph);
+        }
+    }
+    return graph;
+}
+
 int main() {
     unsigned rows, columns;
 
@@ -84,4 +95,8 @@ int main() {
         }
     }
 
+    graph_t full_graph = create_graph(tiles);
+    graph_t graph0 = get_color_graph(full_graph, 0);
+    graph_t graph1 = get_color_graph(full_graph, 1);
+    graph_t graph2 = get_color_graph(full_graph, 2);
 }
