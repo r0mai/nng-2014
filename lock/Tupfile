@@ -2,5 +2,5 @@
 include_rules
 
 : foreach *.cpp |> !cxx |>
-: *.o |> !linker |> lock
-: foreach lock*.txt | lock |> ./lock < %f > %o |> %B.out
+: foreach *.o |> !linker |> %B
+: foreach lock*.txt | main |> ./main < %f > %o |> %B.out
