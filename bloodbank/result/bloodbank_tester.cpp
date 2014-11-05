@@ -73,7 +73,7 @@ struct IVSet
 void runtests(BloodBank& bank)
 {
     const U N = bank.getNumberOfSamples();
-    const U M = N / 10; // max!!
+    U M = N / 10; // max!!
 
     if( !M ) M = 1;
 
