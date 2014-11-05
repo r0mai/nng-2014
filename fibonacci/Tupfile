@@ -1,0 +1,6 @@
+
+include_rules
+
+: foreach *.cpp |> !cxx |>
+: *.o |> !linker |> fib
+: foreach fib*.txt | fib |> ./fib < %f > %o |> %B.out
