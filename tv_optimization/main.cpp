@@ -52,7 +52,7 @@ int main() {
         unsigned a = programs[i].begin;
         unsigned b = a + programs[i].length;
         unsigned f = programs[i].length;
-        auto prev = s.upper_bound( a );
+        auto prev = s.lower_bound( a );
         if ( s.begin()->second.first < prev->second.first + f )
         {
             std::vector<unsigned> cpy = prev->second.second;
