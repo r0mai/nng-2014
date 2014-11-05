@@ -60,10 +60,25 @@ int main() {
             s[b] = std::make_pair( prev->second.first + f , cpy );
         }
     }
-    std::cout << s.begin()->second.first << std::endl;
-    for (auto x : s.begin()->second.second)
-    {
-        std::cout << x << " ";
+
+    //Sanity check
+    const auto& result = s.begin()->second.second;
+    for (unsigned i = 1; i < result.size(); ++i) {
+        Programme prev = programs[result[i-1]];
+        Programme cur = programs[result[i]];
+        assert(prev.begin + prev.length <= cur.begin);
     }
-    std::cout << std::endl;
+    unsigned coverage = 0;
+    for (auto x : s.begin()->second.second) {
+        coverage += programs[x].length;
+    }
+    assert(coverage == s.begin()->second.first);
+
+    std::string prev_tv = "";
+    for (auto x : s.begin()->second.second) {
+        if (programs[x].tv != prev_tv) {
+            std::cout << programs[x].begin << " " << programs[x].tv << std::endl;
+            prev_tv = programs[x].tv;
+        }
+    }
 }
