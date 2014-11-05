@@ -31,7 +31,7 @@ int main() {
         std::cin >> n;
 
         for (unsigned i = 0; i < n; ++i) {
-            programs.push_back(Programme{name});
+            programs.push_back(Programme{name, 0, 0});
             std::cin >> programs.back().begin >> programs.back().length;
         }
     }
@@ -74,11 +74,13 @@ int main() {
     }
     assert(coverage == s.begin()->second.first);
 
-    std::string prev_tv = "";
-    for (auto x : s.begin()->second.second) {
-        if (programs[x].tv != prev_tv) {
-            std::cout << programs[x].begin << " " << programs[x].tv << std::endl;
-            prev_tv = programs[x].tv;
+    std::cout << 0 << " " << programs[result[0]].tv << std::endl;
+    for (unsigned i = 1; i < result.size(); ++i) {
+        Programme prev = programs[result[i-1]];
+        Programme cur = programs[result[i]];
+
+        if (cur.tv != prev.tv) {
+            std::cout << (prev.begin + prev.length) << " " << cur.tv << std::endl;
         }
     }
 }
