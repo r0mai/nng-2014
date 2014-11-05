@@ -14,13 +14,12 @@ VUS ns;
 
 bool req( Index x , Index y , US sum )
 {
-    if( y >= m.size() ) return false;
+    if( y >= ns.size() ) return false;
 
     sum += m[x][y];
 
     if( sum > res ) return false;
-    if( sum == res && y == m.size() - 1 ) return true;
-
+    if( sum == res && y == ns.size() - 1 ) return true;
     if( req( y + 1 , y + 1 , sum ) )
     {
         std::cout << "+ ";
@@ -49,9 +48,14 @@ int main()
         m[i][i] = ns[i];
         for( Index j = i + 1 ; j < ns.size() ; ++j )
         {
-            m[i][j] = m[i][j-1] * ( ns[j] - 1 );
+            m[i][j] = m[i][j-1] * ns[j];
+        }
+        for( Index j = ns.size() - 1 ; j > 0 ; --j )
+        {
+            m[i][j] -= m[i][j-1];
         }
     }
     req( 0 , 0 , 0 );
+    std::cout << " FORDITSD MEG OKET!" << std::endl;
     return 0;
 }
