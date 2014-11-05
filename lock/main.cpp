@@ -1,7 +1,9 @@
 #include <iostream>
 #include <vector>
 
-typedef unsigned long long US;
+#include <boost/multiprecision/cpp_int.hpp>
+
+typedef boost::multiprecision::cpp_int US;
 typedef unsigned long Index;
 typedef std::vector< US > VUS;
 typedef std::vector<VUS > MUS;
