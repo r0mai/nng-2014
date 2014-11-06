@@ -91,11 +91,13 @@ islands_t get_islands(const tiles_t& tiles) {
         for (unsigned x = 0; x < columns; ++x) {
             if (island_map[x][y] == -1) {
                 islands.push_back(
-                    island_t{
+                    island_t(
                         tiles[x][y],
-                        flood_and_paint(tiles, position_t{x, y}, island_map, island_counter++)
-                    }
+                        island_counter,
+                        flood_and_paint(tiles, position_t{x, y}, island_map, island_counter)
+                    )
                 );
+                ++island_counter;
             }
         }
     }

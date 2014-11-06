@@ -24,9 +24,11 @@ typedef std::vector<position_t> positions_t;
 
 struct island_t {
     island_t() = default;
-    island_t(int color, const positions_t& positions) : color(color), positions(positions) {}
+    island_t(int color, unsigned index, const positions_t& positions) :
+        color(color), index(index), positions(positions) {}
 
     int color = -1;
+    unsigned index;
     positions_t positions;
 };
 
