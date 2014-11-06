@@ -3,4 +3,6 @@ include_rules
 
 : foreach *.cpp |> !cxx |>
 : foreach *.o |> !linker |> %B
-: foreach lock*.txt | main |> ./main < %f > %o |> %B.out
+
+# This takes too much time
+# : foreach lock*.txt | main |> ./main < %f > %o |> %B.out
