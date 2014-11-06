@@ -22,6 +22,9 @@ struct position_t {
 
 typedef std::vector<position_t> positions_t;
 
+typedef std::tuple<position_t, position_t> swap_t;
+typedef std::vector<swap_t> swaps_t;
+
 struct island_t {
     island_t() = default;
     island_t(int color, unsigned index, const positions_t& positions) :
@@ -76,7 +79,13 @@ islands_t get_islands(const tiles_t& tiles);
 positions_t flood_and_paint(const tiles_t& tiles, const position_t& from_where,
         int_matrix_t& on_what, int with_what);
 
-tiles_t run_montecarlo(tiles_t tiles, position_t p1, position_t p2, int depth = 30);
+void swap_tiles(tiles_t& tiles, const swap_t& swap);
+
+swaps_t get_swaps(const tiles_t& tiles, const islands_t& islands);
+
+tiles_t run_montecarlo(tiles_t tiles, const swap_t& swap, int depth = 30);
+
+void print_swap(const swap_t& swap);
 
 unsigned score_tiles(const tiles_t& tiles);
 

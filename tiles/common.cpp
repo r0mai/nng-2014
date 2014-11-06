@@ -152,19 +152,65 @@ positions_t flood_and_paint(const tiles_t& tiles, const position_t& from_where,
     return positions;
 }
 
-void do_montecarlo(const tiles_t& tiles) {
+void do_montecarlo(const tiles_t& tiles_copy) {
+
+    tiles_t tiles = tiles_copy;
+
     unsigned columns = tiles.shape()[0];
     unsigned rows = tiles.shape()[1];
 
-    islands_t islands = get_islands(tiles);
-    std::cout << "Initial island count: " <<  islands.size() << std::endl;
+    for (unsigned i = 0; i < 100; ++i) {
+        islands_t islands = get_islands(tiles);
 
-    std::cout << "Monte-carlo: " << score_tiles(run_montecarlo(tiles, {1, 1}, {2, 2})) << std::endl;
+        std::cerr << i << ": island_count = " <<  islands.size() << std::endl;
+        if (islands.size() == 3) {
+            std::cerr << "we're done" << std::endl;
+        }
+
+        std::sort(islands.begin(), islands.end(),
+                [](const island_t& lhs, const island_t& rhs) {
+                    return lhs.positions.size() < rhs.positions.size();
+                });
+
+        swaps_t swaps = get_swaps(tiles, islands);
+        unsigned best_swap = 0;
+        unsigned best_score = score_tiles(run_montecarlo(tiles, swaps[0]));
+
+        for (unsigned j = 1; j < swaps.size(); ++j) {
+            unsigned score = score_tiles(run_montecarlo(tiles, swaps[j]));
+            if (score > best_score) {
+                best_score = score;
+                best_swap = j;
+            }
+        }
+        swap_tiles(tiles, swaps[best_swap]);
+        print_swap(swaps[best_swap]);
+    }
 }
 
-tiles_t run_montecarlo(tiles_t tiles, position_t p1, position_t p2, int depth) {
+void swap_tiles(tiles_t& tiles, const swap_t& swap) {
+    std::swap(tiles[std::get<0>(swap).x][std::get<0>(swap).y],
+            tiles[std::get<1>(swap).x][std::get<1>(swap).y]);
+}
+
+swaps_t get_swaps(const tiles_t& /*tiles*/, const islands_t& islands) {
+    swaps_t swaps;
+    for (unsigned j = 0; j < 10 && j < islands.size(); ++j) {
+        for (unsigned k = 0; k < 10 && k < islands.size(); ++k) {
+            if (islands[j].color != islands[k].color) {
+                swaps.push_back(swap_t(islands[j].positions[0], islands[k].positions[0]));
+            }
+        }
+    }
+    return swaps;
+}
+
+tiles_t run_montecarlo(tiles_t tiles, const swap_t& swap, int depth) {
     unsigned columns = tiles.shape()[0];
     unsigned rows = tiles.shape()[1];
+
+    position_t p1, p2;
+    std::tie(p1, p2) = swap;
 
     std::swap(tiles[p1.x][p1.y], tiles[p2.x][p2.y]);
 
@@ -178,6 +224,11 @@ tiles_t run_montecarlo(tiles_t tiles, position_t p1, position_t p2, int depth) {
     }
 
     return tiles;
+}
+
+void print_swap(const swap_t& swap) {
+    std::cout << std::get<0>(swap).y << " " << std::get<0>(swap).x << " " <<
+                 std::get<1>(swap).y << " " << std::get<1>(swap).x << std::endl;
 }
 
 unsigned score_tiles(const tiles_t& tiles) {
