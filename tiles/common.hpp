@@ -1,6 +1,8 @@
 #ifndef COMMON_HPP_
 #define COMMON_HPP_
 
+#include <cassert>
+
 #include <boost/foreach.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
@@ -18,8 +20,17 @@ struct position_t {
     unsigned x, y;
 };
 
-//We only store a single position in an island (for now)
-typedef std::vector<position_t> islands_t;
+typedef std::vector<position_t> positions_t;
+
+struct island_t {
+    island_t() = default;
+    island_t(int color, const positions_t& positions) : color(color), positions(positions) {}
+
+    int color = -1;
+    positions_t positions;
+};
+
+typedef std::vector<island_t> islands_t;
 
 struct vertex_property_tag {
     typedef boost::vertex_property_tag kind;
@@ -58,10 +69,9 @@ graph_t get_color_graph(graph_t graph, int color);
 
 bool is_done(const tiles_t& tiles);
 
-//unsigned parameter is island count
-std::tuple<island_map_t, unsigned> get_island_map(const tiles_t& tiles);
+islands_t get_islands(const tiles_t& tiles);
 
-void flood_and_paint(const tiles_t& tiles, const position_t& from_where,
+positions_t flood_and_paint(const tiles_t& tiles, const position_t& from_where,
         int_matrix_t& on_what, int with_what);
 
 tiles_t run_montecarlo(tiles_t tiles, int depth);

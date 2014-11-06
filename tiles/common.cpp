@@ -68,36 +68,49 @@ graph_t get_color_graph(graph_t graph, int color) {
 
 bool is_done(const tiles_t& tiles) {
     //TODO optimize
-    return std::get<1>(get_island_map(tiles)) == 3;
+    return get_islands(tiles).size() == 3;
 }
 
 
-std::tuple<island_map_t, unsigned> get_island_map(const tiles_t& tiles) {
+islands_t get_islands(const tiles_t& tiles) {
     unsigned columns = tiles.shape()[0];
     unsigned rows = tiles.shape()[1];
 
-    island_map_t islands(boost::extents[columns][rows]);
+    island_map_t island_map(boost::extents[columns][rows]);
+    islands_t islands;
 
-    int island_counter = 1;
+    for (unsigned y = 0; y < rows; ++y) {
+        for (unsigned x = 0; x < columns; ++x) {
+            island_map[x][y] = -1;
+        }
+    }
+
+    int island_counter = 0;
     // I think this traversing order is better for the cache
     for (unsigned y = 0; y < rows; ++y) {
         for (unsigned x = 0; x < columns; ++x) {
-            if (islands[x][y] == 0) {
-                flood_and_paint(tiles, position_t{x, y}, islands, island_counter++);
+            if (island_map[x][y] != -1) {
+                islands.push_back(
+                    island_t{
+                        tiles[x][y],
+                        flood_and_paint(tiles, position_t{x, y}, island_map, island_counter++)
+                    }
+                );
             }
         }
     }
 
-    return std::make_tuple(islands, island_counter - 1);
+    return islands;
 }
 
-void flood_and_paint(const tiles_t& tiles, const position_t& from_where,
+positions_t flood_and_paint(const tiles_t& tiles, const position_t& from_where,
         int_matrix_t& on_what, int with_what)
 {
     unsigned columns = tiles.shape()[0];
     unsigned rows = tiles.shape()[1];
 
     int target_color = tiles[from_where.x][from_where.y];
+    positions_t positions;
 
     std::vector<position_t> position_stack;
     position_stack.push_back(from_where);
@@ -107,6 +120,7 @@ void flood_and_paint(const tiles_t& tiles, const position_t& from_where,
         position_stack.pop_back();
 
         on_what[top.x][top.y] = with_what;
+        positions.push_back(position_t{top.x, top.y});
 
         if (top.x > 0 &&
             tiles[top.x - 1][top.y] == target_color &&
@@ -133,17 +147,15 @@ void flood_and_paint(const tiles_t& tiles, const position_t& from_where,
             position_stack.push_back(position_t{top.x, top.y + 1});
         }
     }
+    return positions;
 }
 
 void do_montecarlo(const tiles_t& tiles) {
     unsigned columns = tiles.shape()[0];
     unsigned rows = tiles.shape()[1];
 
-    island_map_t island_map(boost::extents[columns][rows]);
-    unsigned island_count;
-
-    std::tie(island_map, island_count) = get_island_map(tiles);
-    std::cout << "Initial island count: " << island_count << std::endl;
+    islands_t islands = get_islands(tiles);
+    std::cout << "Initial island count: " <<  islands.size() << std::endl;
 
     std::cout << "Monte-carlo: " << score_tiles(run_montecarlo(tiles, 1000)) << std::endl;
 }
@@ -165,7 +177,7 @@ tiles_t run_montecarlo(tiles_t tiles, int depth) {
 }
 
 unsigned score_tiles(const tiles_t& tiles) {
-    return std::get<1>(get_island_map(tiles));
+    return get_islands(tiles).size();
 }
 
 void do_graph(const tiles_t& tiles) {
