@@ -157,18 +157,20 @@ void do_montecarlo(const tiles_t& tiles) {
     islands_t islands = get_islands(tiles);
     std::cout << "Initial island count: " <<  islands.size() << std::endl;
 
-    std::cout << "Monte-carlo: " << score_tiles(run_montecarlo(tiles, 1000)) << std::endl;
+    std::cout << "Monte-carlo: " << score_tiles(run_montecarlo(tiles, {1, 1}, {2, 2})) << std::endl;
 }
 
-tiles_t run_montecarlo(tiles_t tiles, int depth) {
+tiles_t run_montecarlo(tiles_t tiles, position_t p1, position_t p2, int depth) {
     unsigned columns = tiles.shape()[0];
     unsigned rows = tiles.shape()[1];
 
+    std::swap(tiles[p1.x][p1.y], tiles[p2.x][p2.y]);
+
     for (int i = 0; i < depth; ++i) {
-        int x1 = std::rand() % columns;
-        int y1 = std::rand() % rows;
-        int x2 = std::rand() % columns;
-        int y2 = std::rand() % rows;
+        unsigned x1 = std::rand() % columns;
+        unsigned y1 = std::rand() % rows;
+        unsigned x2 = std::rand() % columns;
+        unsigned y2 = std::rand() % rows;
 
         std::swap(tiles[x1][y1], tiles[x2][y2]);
     }
