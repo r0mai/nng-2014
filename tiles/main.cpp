@@ -96,7 +96,10 @@ int main() {
     }
 
     graph_t full_graph = create_graph(tiles);
-    graph_t graph0 = get_color_graph(full_graph, 0);
-    graph_t graph1 = get_color_graph(full_graph, 1);
-    graph_t graph2 = get_color_graph(full_graph, 2);
+
+    std::array<graph_t, 3> color_grahs {{
+        get_color_graph(full_graph, 0),
+        get_color_graph(full_graph, 1),
+        get_color_graph(full_graph, 2)
+    }};
 }
