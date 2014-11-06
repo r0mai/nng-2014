@@ -8,8 +8,10 @@
 #include <boost/multi_array.hpp>
 
 typedef boost::multi_array<int, 2> int_matrix_t;
-typedef int_matrix_t tiles_t;
 typedef boost::multi_array<bool, 2> bool_matrix_t;
+
+typedef int_matrix_t tiles_t;
+typedef int_matrix_t island_map_t;
 
 
 struct position_t {
@@ -55,7 +57,9 @@ graph_t create_graph(const tiles_t& tiles);
 graph_t get_color_graph(graph_t graph, int color);
 
 bool is_done(const tiles_t& tiles);
-islands_t get_islands(const tiles_t& tiles);
+
+//unsigned parameter is island count
+std::tuple<island_map_t, unsigned> get_island_map(const tiles_t& tiles);
 
 void flood_and_paint(const tiles_t& tiles, const position_t& from_where,
         int_matrix_t& on_what, int with_what);

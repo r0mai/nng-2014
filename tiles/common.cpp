@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <tuple>
 
 #include "common.hpp"
 
@@ -66,17 +67,15 @@ graph_t get_color_graph(graph_t graph, int color) {
 
 bool is_done(const tiles_t& tiles) {
     //TODO optimize
-    return get_islands(tiles).size() == 3;
+    return std::get<1>(get_island_map(tiles)) == 3;
 }
 
 
-islands_t get_islands(const tiles_t& tiles) {
+std::tuple<island_map_t, unsigned> get_island_map(const tiles_t& tiles) {
     unsigned columns = tiles.shape()[0];
     unsigned rows = tiles.shape()[1];
 
-    int_matrix_t islands(boost::extents[columns][rows]);
-
-    islands_t islands_vector;
+    island_map_t islands(boost::extents[columns][rows]);
 
     int island_counter = 1;
     // I think this traversing order is better for the cache
@@ -84,12 +83,11 @@ islands_t get_islands(const tiles_t& tiles) {
         for (unsigned x = 0; x < columns; ++x) {
             if (islands[x][y] == 0) {
                 flood_and_paint(tiles, position_t{x, y}, islands, island_counter++);
-                islands_vector.push_back(position_t{x, y});
             }
         }
     }
 
-    return islands_vector;
+    return std::make_tuple(islands, island_counter - 1);
 }
 
 void flood_and_paint(const tiles_t& tiles, const position_t& from_where,
@@ -137,7 +135,14 @@ void flood_and_paint(const tiles_t& tiles, const position_t& from_where,
 }
 
 void do_montecarlo(const tiles_t& tiles) {
-    std::cout << "Initial island count: " << get_islands(tiles).size() << std::endl;
+    unsigned columns = tiles.shape()[0];
+    unsigned rows = tiles.shape()[1];
+
+    island_map_t island_map(boost::extents[columns][rows]);
+    unsigned island_count;
+
+    std::tie(island_map, island_count) = get_island_map(tiles);
+    std::cout << "Initial island count: " << island_count << std::endl;
 }
 
 void do_graph(const tiles_t& tiles) {
