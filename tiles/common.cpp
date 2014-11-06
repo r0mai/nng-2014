@@ -145,10 +145,10 @@ void do_montecarlo(const tiles_t& tiles) {
     std::tie(island_map, island_count) = get_island_map(tiles);
     std::cout << "Initial island count: " << island_count << std::endl;
 
-    std::cout << "Monte-carlo: " << run_montecarlo(tiles, 1000) << std::endl;
+    std::cout << "Monte-carlo: " << score_tiles(run_montecarlo(tiles, 1000)) << std::endl;
 }
 
-int run_montecarlo(tiles_t tiles, int depth) {
+tiles_t run_montecarlo(tiles_t tiles, int depth) {
     unsigned columns = tiles.shape()[0];
     unsigned rows = tiles.shape()[1];
 
@@ -161,6 +161,10 @@ int run_montecarlo(tiles_t tiles, int depth) {
         std::swap(tiles[x1][y1], tiles[x2][y2]);
     }
 
+    return tiles;
+}
+
+unsigned score_tiles(const tiles_t& tiles) {
     return std::get<1>(get_island_map(tiles));
 }
 
