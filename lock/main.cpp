@@ -19,6 +19,7 @@ VUS ns;
 US counter = 0;
 MUNS x;
 
+std::string chars;
 
 bool doit( Index i , Index j , US max = res )
 {   
@@ -32,7 +33,8 @@ bool doit( Index i , Index j , US max = res )
         {
             if ( doit( j + 1 , n.first , max - m[i][j] ) )
             {
-                std::cout << "multiply from " << i << " to " << j << " =  " << m[i][j]  << std::endl; 
+                chars += std::string( j - i , '*' ) + '+';
+                std::cerr << "multiply from " << i << " to " << j << " =  " << m[i][j]  << std::endl; 
                 return true;
             }
         }
@@ -97,5 +99,10 @@ int main()
         if ( doit( 0 , j ) ) break;
     }
 
+    for( std::string::reverse_iterator rit = chars.rbegin() + 1 ; rit != chars.rend() ; ++rit )
+    {
+        std::cout << *rit << " ";
+    }
+    std::cout << std::endl;
     return 0;
 }
