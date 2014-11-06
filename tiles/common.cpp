@@ -64,8 +64,80 @@ graph_t get_color_graph(graph_t graph, int color) {
     return graph;
 }
 
+bool is_done(const tiles_t& tiles) {
+    //TODO optimize
+    return get_islands(tiles).size() == 3;
+}
+
+
+islands_t get_islands(const tiles_t& tiles) {
+    unsigned columns = tiles.shape()[0];
+    unsigned rows = tiles.shape()[1];
+
+    int_matrix_t islands(boost::extents[columns][rows]);
+
+    islands_t islands_vector;
+
+    int island_counter = 1;
+    // I think this traversing order is better for the cache
+    for (unsigned y = 0; y < rows; ++y) {
+        for (unsigned x = 0; x < columns; ++x) {
+            if (islands[x][y] == 0) {
+                flood_and_paint(tiles, position_t{x, y}, islands, island_counter++);
+                islands_vector.push_back(position_t{x, y});
+            }
+        }
+    }
+
+    return islands_vector;
+}
+
+void flood_and_paint(const tiles_t& tiles, const position_t& from_where,
+        int_matrix_t& on_what, int with_what)
+{
+    unsigned columns = tiles.shape()[0];
+    unsigned rows = tiles.shape()[1];
+
+    int target_color = tiles[from_where.x][from_where.y];
+
+    std::vector<position_t> position_stack;
+    position_stack.push_back(from_where);
+
+    while (!position_stack.empty()) {
+        position_t top = position_stack.back();
+        position_stack.pop_back();
+
+        on_what[top.x][top.y] = with_what;
+
+        if (top.x > 0 &&
+            tiles[top.x - 1][top.y] == target_color &&
+            on_what[top.x - 1][top.y] != with_what)
+        {
+            position_stack.push_back(position_t{top.x - 1, top.y});
+        }
+        if (top.x < columns - 1 &&
+            tiles[top.x + 1][top.y] == target_color &&
+            on_what[top.x + 1][top.y] != with_what)
+        {
+            position_stack.push_back(position_t{top.x + 1, top.y});
+        }
+        if (top.y > 0 &&
+            tiles[top.x][top.y - 1] == target_color &&
+            on_what[top.x][top.y - 1] != with_what)
+        {
+            position_stack.push_back(position_t{top.x, top.y - 1});
+        }
+        if (top.y < rows - 1 &&
+            tiles[top.x][top.y + 1] == target_color &&
+            on_what[top.x][top.y + 1] != with_what)
+        {
+            position_stack.push_back(position_t{top.x, top.y + 1});
+        }
+    }
+}
+
 void do_montecarlo(const tiles_t& tiles) {
-    //TODO implement
+    std::cout << "Initial island count: " << get_islands(tiles).size() << std::endl;
 }
 
 void do_graph(const tiles_t& tiles) {

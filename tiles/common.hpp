@@ -7,7 +7,17 @@
 
 #include <boost/multi_array.hpp>
 
-typedef boost::multi_array<int, 2> tiles_t;
+typedef boost::multi_array<int, 2> int_matrix_t;
+typedef int_matrix_t tiles_t;
+typedef boost::multi_array<bool, 2> bool_matrix_t;
+
+
+struct position_t {
+    unsigned x, y;
+};
+
+//We only store a single position in an island (for now)
+typedef std::vector<position_t> islands_t;
 
 struct vertex_property_tag {
     typedef boost::vertex_property_tag kind;
@@ -44,6 +54,11 @@ edge_property& get_edge_property(edge_descriptor edge, graph_t& graph);
 graph_t create_graph(const tiles_t& tiles);
 graph_t get_color_graph(graph_t graph, int color);
 
+bool is_done(const tiles_t& tiles);
+islands_t get_islands(const tiles_t& tiles);
+
+void flood_and_paint(const tiles_t& tiles, const position_t& from_where,
+        int_matrix_t& on_what, int with_what);
 
 void do_montecarlo(const tiles_t& tiles);
 
