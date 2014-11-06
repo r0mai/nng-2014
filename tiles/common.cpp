@@ -89,7 +89,7 @@ islands_t get_islands(const tiles_t& tiles) {
     // I think this traversing order is better for the cache
     for (unsigned y = 0; y < rows; ++y) {
         for (unsigned x = 0; x < columns; ++x) {
-            if (island_map[x][y] != -1) {
+            if (island_map[x][y] == -1) {
                 islands.push_back(
                     island_t{
                         tiles[x][y],
