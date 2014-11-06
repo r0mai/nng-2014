@@ -52,4 +52,7 @@ void runtests(BloodBank& bank)
 			bank.markSafe(samples[0]);
 		}
 	}
+
+	delete first;
+	delete second;
 }
