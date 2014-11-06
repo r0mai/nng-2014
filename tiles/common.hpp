@@ -64,6 +64,8 @@ std::tuple<island_map_t, unsigned> get_island_map(const tiles_t& tiles);
 void flood_and_paint(const tiles_t& tiles, const position_t& from_where,
         int_matrix_t& on_what, int with_what);
 
+int run_montecarlo(tiles_t tiles, int depth);
+
 void do_montecarlo(const tiles_t& tiles);
 
 void do_graph(const tiles_t& tiles);

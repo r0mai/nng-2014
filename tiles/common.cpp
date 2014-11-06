@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <tuple>
+#include <cstdlib>
 
 #include "common.hpp"
 
@@ -143,6 +144,24 @@ void do_montecarlo(const tiles_t& tiles) {
 
     std::tie(island_map, island_count) = get_island_map(tiles);
     std::cout << "Initial island count: " << island_count << std::endl;
+
+    std::cout << "Monte-carlo: " << run_montecarlo(tiles, 1000) << std::endl;
+}
+
+int run_montecarlo(tiles_t tiles, int depth) {
+    unsigned columns = tiles.shape()[0];
+    unsigned rows = tiles.shape()[1];
+
+    for (int i = 0; i < depth; ++i) {
+        int x1 = std::rand() % columns;
+        int y1 = std::rand() % rows;
+        int x2 = std::rand() % columns;
+        int y2 = std::rand() % rows;
+
+        std::swap(tiles[x1][y1], tiles[x2][y2]);
+    }
+
+    return std::get<1>(get_island_map(tiles));
 }
 
 void do_graph(const tiles_t& tiles) {
