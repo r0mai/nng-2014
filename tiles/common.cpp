@@ -245,3 +245,25 @@ void do_graph(const tiles_t& tiles) {
     }};
     //TODO not finished
 }
+
+void do_bit_magic(const tiles_t& tiles) {
+    bit_tiles_t bit_tiles = to_bit_tiles(tiles);
+}
+
+bit_tiles_t to_bit_tiles(const tiles_t& tiles) {
+    unsigned columns = tiles.shape()[0];
+    unsigned rows = tiles.shape()[1];
+
+    assert(columns == 64);
+    assert(rows == 64);
+
+    bit_tiles_t result = {{{0}, {0}, {0}}};
+
+    for (unsigned y = 0; y < 64; ++y) {
+        for (unsigned x = 0; x < 64; ++x) {
+            set_bit(result[tiles[x][y]], {x, y});
+        }
+    }
+
+    return result;
+}

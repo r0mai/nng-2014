@@ -93,4 +93,30 @@ void do_montecarlo(const tiles_t& tiles);
 
 void do_graph(const tiles_t& tiles);
 
+void do_bit_magic(const tiles_t& tiles);
+
+
+
+//bit magic
+
+typedef std::uint64_t bit_row_t;
+typedef std::array<bit_row_t, 64> bit_matrix_t;
+typedef std::array<bit_matrix_t, 3> bit_tiles_t;
+
+bit_tiles_t to_bit_tiles(const tiles_t& tiles);
+
+inline
+void set_bit(bit_matrix_t& m, const position_t& p) {
+    m[p.y] |= (1 << p.x);
+}
+
+inline
+void unset_bit(bit_matrix_t& m, const position_t& p) {
+    m[p.y] &= ~(1 << p.x);
+}
+
+inline bool get_bit(const bit_matrix_t& m, const position_t& p) {
+    return m[p.y] & (1 << p.x);
+}
+
 #endif
