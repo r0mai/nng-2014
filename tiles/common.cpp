@@ -250,6 +250,10 @@ void do_bit_magic(const tiles_t& tiles) {
     bit_tiles_t bit_tiles = to_bit_tiles(tiles);
 }
 
+void do_naive(const tiles_t& tiles) {
+    //TODO BELA
+}
+
 bit_tiles_t to_bit_tiles(const tiles_t& tiles) {
     unsigned columns = tiles.shape()[0];
     unsigned rows = tiles.shape()[1];

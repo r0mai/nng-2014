@@ -93,9 +93,9 @@ void do_montecarlo(const tiles_t& tiles);
 
 void do_graph(const tiles_t& tiles);
 
+void do_naive(const tiles_t& tiles);
+
 void do_bit_magic(const tiles_t& tiles);
-
-
 
 //bit magic
 
