@@ -72,6 +72,8 @@ edge_property& get_edge_property(edge_descriptor edge, graph_t& graph);
 graph_t create_graph(const tiles_t& tiles);
 graph_t get_color_graph(graph_t graph, int color);
 
+void print_tiles(const tiles_t& tiles);
+
 bool is_done(const tiles_t& tiles);
 
 islands_t get_islands(const tiles_t& tiles);
@@ -90,12 +92,10 @@ void print_swap(const swap_t& swap);
 unsigned score_tiles(const tiles_t& tiles);
 
 void do_montecarlo(const tiles_t& tiles);
-
 void do_graph(const tiles_t& tiles);
-
 void do_naive(const tiles_t& tiles);
-
 void do_bit_magic(const tiles_t& tiles);
+void do_cellular(const tiles_t& tiles);
 
 //bit magic
 

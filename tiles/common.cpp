@@ -66,6 +66,27 @@ graph_t get_color_graph(graph_t graph, int color) {
     return graph;
 }
 
+void print_tiles(const tiles_t& tiles) {
+    unsigned columns = tiles.shape()[0];
+    unsigned rows = tiles.shape()[1];
+
+    for (unsigned y = 0; y < rows; ++y) {
+        for (unsigned x = 0; x < columns; ++x) {
+            switch (tiles[x][y]) {
+            case 0:
+                std::cerr << "\033[31m"; break;
+            case 1:
+                std::cerr << "\033[32m"; break;
+            case 2:
+                std::cerr << "\033[34m"; break;
+            }
+            std::cerr << "X";
+            std::cerr << "\033[0m";
+        }
+        std::cerr << std::endl;
+    }
+}
+
 bool is_done(const tiles_t& tiles) {
     //TODO optimize
     return get_islands(tiles).size() == 3;
@@ -270,4 +291,26 @@ bit_tiles_t to_bit_tiles(const tiles_t& tiles) {
     }
 
     return result;
+}
+
+
+// REALM OF CELLS
+
+struct CellularRunner {
+    CellularRunner(const tiles_t& tiles) : tiles(tiles) {}
+
+    void run();
+
+    tiles_t tiles;
+
+    std::vector<swap_t> swaps;
+};
+
+void do_cellular(const tiles_t& tiles) {
+    CellularRunner runner(tiles);
+    runner.run();
+}
+
+void CellularRunner::run() {
+    print_tiles(tiles);
 }

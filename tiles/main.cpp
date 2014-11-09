@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
     std::srand(std::time(0));
 
     if (argc != 2) {
-        std::cerr << "Usage : ./tiles naive|graph|mc|bit" << std::endl;
+        std::cerr << "Usage : ./tiles naive|graph|mc|bit|cell" << std::endl;
         return 1;
     }
 
@@ -25,6 +25,8 @@ int main(int argc, char **argv) {
         do_montecarlo(tiles);
     } else if (argv[1] == std::string("bit")) {
         do_bit_magic(tiles);
+    } else if (argv[1] == std::string("cell")) {
+        do_cellular(tiles);
     } else {
         std::cerr << "Unknown method" << std::endl;
         return 1;

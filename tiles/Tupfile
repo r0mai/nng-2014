@@ -3,4 +3,4 @@ include_rules
 
 : foreach *.cpp |> !cxx |>
 : *.o |> !linker |> tiles
-: foreach tiles*.txt | tiles |> ./tiles mc < %f > %o |> %B.out
+: foreach tiles*.txt | tiles |> ./tiles cell < %f > %o |> %B.out
