@@ -387,6 +387,7 @@ void CellularRunner::run() {
             update_score_matrix_around(max);
         }
         if (i % 100 == 0) {
+            print_tiles(tiles);
             std::cerr << i << " : " << get_islands(tiles).size() << std::endl;
         }
     }
@@ -414,7 +415,7 @@ CellularRunner::score_t CellularRunner::get_score(const position_t& pos) {
                 unsigned d = std::abs(int(x) - int(pos.x)) + std::abs(int(y) - int(pos.y));
                 if (d > radius || tiles[x][y] != i) continue;
 
-                score[i] += (radius - d);
+                score[i] += (1u << (radius - d));
             }
         }
     }
