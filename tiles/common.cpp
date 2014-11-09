@@ -2,6 +2,7 @@
 #include <iostream>
 #include <tuple>
 #include <cstdlib>
+#include <cmath>
 
 #include <boost/optional.hpp>
 
@@ -319,6 +320,7 @@ struct CellularRunner {
 
     tiles_t tiles;
     score_matrix_t score_matrix;
+    unsigned radius = 10;
 
     std::vector<swap_t> swaps;
 };
@@ -402,19 +404,19 @@ CellularRunner::score_t CellularRunner::get_score(const position_t& pos) {
 
     score_t score = {{0, 0, 0}};
     for (int i = 0; i < 3; ++i) {
-        bool n1 = pos.y > 0 && tiles[pos.x][pos.y - 1] == i;
-        bool e1 = pos.x < columns - 1 && tiles[pos.x + 1][pos.y] == i;
-        bool s1 = pos.y < rows - 1 && tiles[pos.x][pos.y + 1] == i;
-        bool w1 = pos.x > 0 && tiles[pos.x - 1][pos.y] == i;
+        unsigned min_x = std::max(pos.x, radius) - radius;
+        unsigned min_y = std::max(pos.y, radius) - radius;
+        unsigned max_x = std::min(pos.x + radius, columns - 1);
+        unsigned max_y = std::min(pos.y + radius, rows - 1);
 
-        bool n2 = pos.y > 1 && tiles[pos.x][pos.y - 2] == i;
-        bool e2 = pos.x < columns - 2 && tiles[pos.x + 2][pos.y] == i;
-        bool s2 = pos.y < rows - 2 && tiles[pos.x][pos.y + 2] == i;
-        bool w2 = pos.x > 1 && tiles[pos.x - 2][pos.y] == i;
+        for (unsigned x = min_x; x <= max_x; ++x) {
+            for (unsigned y = min_y; y <= max_y; ++y) {
+                unsigned d = std::abs(int(x) - int(pos.x)) + std::abs(int(y) - int(pos.y));
+                if (d > radius || tiles[x][y] != i) continue;
 
-        score[i] += 3*(0 + n1 + e1 + s1 + w1);
-        score[i] += 2*(0 + n2 + e2 + s2 + w2);
-        score[i] += 1*(0 + (n1 && e1) + (e1 && s1) + (s1 && w1) + (w1 && n1));
+                score[i] += (radius - d);
+            }
+        }
     }
     return score;
 }
@@ -434,8 +436,8 @@ void CellularRunner::update_score_matrix_around(const position_t& pos) {
     unsigned columns = tiles.shape()[0];
     unsigned rows = tiles.shape()[1];
 
-    for (unsigned y = std::max(1u, pos.y) - 1; y < rows && y < pos.y + 2; ++y) {
-        for (unsigned x = std::max(1u, pos.x) - 1; x < columns && x < pos.x + 2; ++x) {
+    for (unsigned y = std::max(radius, pos.y) - radius; y < rows && y < pos.y + radius+1; ++y) {
+        for (unsigned x = std::max(radius, pos.x) - radius; x < columns && x < pos.x + radius+1; ++x) {
             score_matrix[x][y] = get_score({x, y});
         }
     }
