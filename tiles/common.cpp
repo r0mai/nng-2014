@@ -3,6 +3,8 @@
 #include <tuple>
 #include <cstdlib>
 
+#include <boost/optional.hpp>
+
 #include "common.hpp"
 
 tiles_t read_from_cin() {
@@ -297,11 +299,26 @@ bit_tiles_t to_bit_tiles(const tiles_t& tiles) {
 // REALM OF CELLS
 
 struct CellularRunner {
-    CellularRunner(const tiles_t& tiles) : tiles(tiles) {}
+    CellularRunner(const tiles_t& tiles) :
+        tiles(tiles), score_matrix(boost::extents[tiles.shape()[0]][tiles.shape()[1]]) {}
 
     void run();
 
+    typedef std::array<int, 3> score_t;
+    typedef boost::multi_array<score_t, 2> score_matrix_t;
+
+    score_t get_score(const position_t& pos);
+    void get_score_matrix();
+    void update_score_matrix_around(const position_t& pos);
+
+    position_t get_minimal(int color);
+    position_t get_maximal(int color);
+
+    void do_swap(const swap_t& swap);
+    void print_swaps();
+
     tiles_t tiles;
+    score_matrix_t score_matrix;
 
     std::vector<swap_t> swaps;
 };
@@ -311,6 +328,124 @@ void do_cellular(const tiles_t& tiles) {
     runner.run();
 }
 
+position_t CellularRunner::get_minimal(int color) {
+    unsigned columns = tiles.shape()[0];
+    unsigned rows = tiles.shape()[1];
+
+    boost::optional<position_t> minimal;
+
+    for (unsigned y = 0; y < rows; ++y) {
+        for (unsigned x = 0; x < columns; ++x) {
+            if (tiles[x][y] != color) {
+                continue;
+            }
+            if (!minimal || score_matrix[minimal->x][minimal->y][color] > score_matrix[x][y][color]) {
+                minimal = {x, y};
+                if (score_matrix[minimal->x][minimal->y][color] == 0) {
+                    return *minimal;
+                }
+            }
+        }
+    }
+    return *minimal;
+}
+
+position_t CellularRunner::get_maximal(int color) {
+    unsigned columns = tiles.shape()[0];
+    unsigned rows = tiles.shape()[1];
+
+    boost::optional<position_t> maximal;
+
+    for (unsigned y = 0; y < rows; ++y) {
+        for (unsigned x = 0; x < columns; ++x) {
+            if (tiles[x][y] == color) {
+                continue;
+            }
+            if (!maximal || score_matrix[maximal->x][maximal->y][color] < score_matrix[x][y][color]) {
+                maximal = {x, y};
+                if (score_matrix[maximal->x][maximal->y][color] == 4) {
+                    return *maximal;
+                }
+            }
+        }
+    }
+    return *maximal;
+}
+
 void CellularRunner::run() {
     print_tiles(tiles);
+
+    std::cerr << "Initial islands = " << get_islands(tiles).size() << std::endl;
+
+    unsigned columns = tiles.shape()[0];
+    unsigned rows = tiles.shape()[1];
+
+    get_score_matrix();
+
+    for (int i = 0; i < 1000 /*&& !is_done(tiles)*/; ++i) {
+        for (int c = 0; c < 3; ++c) {
+            position_t min = get_minimal(c);
+            position_t max = get_maximal(c);
+            do_swap(swap_t(min, max));
+            update_score_matrix_around(min);
+            update_score_matrix_around(max);
+        }
+        if (i % 100 == 0) {
+            std::cerr << i << " : " << get_islands(tiles).size() << std::endl;
+        }
+    }
+
+    std::cerr << "\n----------\n";
+    print_tiles(tiles);
+
+    std::cerr << "Finished islands = " << get_islands(tiles).size() << std::endl;
+    print_swaps();
+}
+
+CellularRunner::score_t CellularRunner::get_score(const position_t& pos) {
+    unsigned columns = tiles.shape()[0];
+    unsigned rows = tiles.shape()[1];
+
+    score_t score = {{0, 0, 0}};
+    for (int i = 0; i < 3; ++i) {
+        if (pos.x > 0 && tiles[pos.x - 1][pos.y] == i) score[i] += 1;
+        if (pos.x < columns - 1 && tiles[pos.x + 1][pos.y] == i) score[i] += 1;
+        if (pos.y > 0 && tiles[pos.x][pos.y - 1] == i) score[i] += 1;
+        if (pos.y < rows - 1 && tiles[pos.x][pos.y + 1] == i) score[i] += 1;
+    }
+    return score;
+}
+
+void CellularRunner::get_score_matrix() {
+    unsigned columns = tiles.shape()[0];
+    unsigned rows = tiles.shape()[1];
+
+    for (unsigned y = 0; y < rows; ++y) {
+        for (unsigned x = 0; x < columns; ++x) {
+            score_matrix[x][y] = get_score({x, y});
+        }
+    }
+}
+
+void CellularRunner::update_score_matrix_around(const position_t& pos) {
+    unsigned columns = tiles.shape()[0];
+    unsigned rows = tiles.shape()[1];
+
+    for (unsigned y = std::max(1u, pos.y) - 1; y < rows && y < pos.y + 2; ++y) {
+        for (unsigned x = std::max(1u, pos.x) - 1; x < columns && x < pos.x + 2; ++x) {
+            score_matrix[x][y] = get_score({x, y});
+        }
+    }
+}
+
+void CellularRunner::do_swap(const swap_t& swap) {
+    swap_tiles(tiles, swap);
+    swaps.push_back(swap);
+}
+
+void CellularRunner::print_swaps() {
+    std::cout << swaps.size() << "\n";
+    for (auto x : swaps) {
+        std::cout << get<0>(x).x << " " << get<0>(x).y << " " << get<1>(x).x << " " << get<1>(x).y << "\n";
+    }
 }
