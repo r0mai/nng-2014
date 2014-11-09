@@ -341,9 +341,6 @@ position_t CellularRunner::get_minimal(int color) {
             }
             if (!minimal || score_matrix[minimal->x][minimal->y][color] > score_matrix[x][y][color]) {
                 minimal = {x, y};
-                if (score_matrix[minimal->x][minimal->y][color] == 0) {
-                    return *minimal;
-                }
             }
         }
     }
@@ -363,9 +360,6 @@ position_t CellularRunner::get_maximal(int color) {
             }
             if (!maximal || score_matrix[maximal->x][maximal->y][color] < score_matrix[x][y][color]) {
                 maximal = {x, y};
-                if (score_matrix[maximal->x][maximal->y][color] == 4) {
-                    return *maximal;
-                }
             }
         }
     }
@@ -408,10 +402,19 @@ CellularRunner::score_t CellularRunner::get_score(const position_t& pos) {
 
     score_t score = {{0, 0, 0}};
     for (int i = 0; i < 3; ++i) {
-        if (pos.x > 0 && tiles[pos.x - 1][pos.y] == i) score[i] += 1;
-        if (pos.x < columns - 1 && tiles[pos.x + 1][pos.y] == i) score[i] += 1;
-        if (pos.y > 0 && tiles[pos.x][pos.y - 1] == i) score[i] += 1;
-        if (pos.y < rows - 1 && tiles[pos.x][pos.y + 1] == i) score[i] += 1;
+        bool n1 = pos.y > 0 && tiles[pos.x][pos.y - 1] == i;
+        bool e1 = pos.x < columns - 1 && tiles[pos.x + 1][pos.y] == i;
+        bool s1 = pos.y < rows - 1 && tiles[pos.x][pos.y + 1] == i;
+        bool w1 = pos.x > 0 && tiles[pos.x - 1][pos.y] == i;
+
+        bool n2 = pos.y > 1 && tiles[pos.x][pos.y - 2] == i;
+        bool e2 = pos.x < columns - 2 && tiles[pos.x + 2][pos.y] == i;
+        bool s2 = pos.y < rows - 2 && tiles[pos.x][pos.y + 2] == i;
+        bool w2 = pos.x > 1 && tiles[pos.x - 2][pos.y] == i;
+
+        score[i] += 3*(0 + n1 + e1 + s1 + w1);
+        score[i] += 2*(0 + n2 + e2 + s2 + w2);
+        score[i] += 1*(0 + (n1 && e1) + (e1 && s1) + (s1 && w1) + (w1 && n1));
     }
     return score;
 }
