@@ -119,4 +119,33 @@ inline bool get_bit(const bit_matrix_t& m, const position_t& p) {
     return m[p.y] & (1 << p.x);
 }
 
+struct CellularRunner {
+    CellularRunner(const tiles_t& tiles) :
+        tiles(tiles),
+        score_matrix(boost::extents[tiles.shape()[0]][tiles.shape()[1]]) {}
+
+    void run();
+
+    typedef std::array<long long, 3> score_t;
+    typedef boost::multi_array<score_t, 2> score_matrix_t;
+
+    score_t get_score(const position_t& pos);
+    void get_score_matrix();
+    void update_score_matrix_around(const position_t& pos);
+    swap_t get_best_swap();
+
+    position_t get_minimal(int color);
+    position_t get_maximal(int color);
+
+    void do_swap(const swap_t& swap);
+    void print_swaps();
+
+    tiles_t tiles;
+    score_matrix_t score_matrix;
+    unsigned radius = 32;
+
+    std::vector<swap_t> swaps;
+};
+
+
 #endif
