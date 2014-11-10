@@ -111,7 +111,7 @@ void set_bit(bit_matrix_t& m, const position_t& p) {
 }
 
 inline
-void unset_bit(bit_matrix_t& m, const position_t& p) {
+void utdnset_bit(bit_matrix_t& m, const position_t& p) {
     m[p.y] &= ~(1 << p.x);
 }
 
