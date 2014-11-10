@@ -25,6 +25,8 @@ typedef std::vector<position_t> positions_t;
 typedef std::tuple<position_t, position_t> swap_t;
 typedef std::vector<swap_t> swaps_t;
 
+void print_swaps(const swaps_t& swaps);
+
 struct island_t {
     island_t() = default;
     island_t(int color, unsigned index, const positions_t& positions) :
@@ -66,13 +68,14 @@ typedef boost::graph_traits<graph_t>::edge_iterator edge_iterator;
 typedef boost::graph_traits<graph_t>::in_edge_iterator in_edge_iterator;
 typedef boost::graph_traits<graph_t>::out_edge_iterator out_edge_iterator;
 
-tiles_t read_from_cin();
+tiles_t read_from(std::istream& in = std::cin);
 vertex_property& get_vertex_property(vertex_descriptor vertex, graph_t& graph);
 edge_property& get_edge_property(edge_descriptor edge, graph_t& graph);
 graph_t create_graph(const tiles_t& tiles);
 graph_t get_color_graph(graph_t graph, int color);
 
 void print_tiles(const tiles_t& tiles);
+void print_tiles_as_input(const tiles_t& tiles);
 
 bool is_done(const tiles_t& tiles);
 
@@ -147,5 +150,6 @@ struct CellularRunner {
     std::vector<swap_t> swaps;
 };
 
+swaps_t do_from_to(tiles_t from, const tiles_t& to);
 
 #endif
