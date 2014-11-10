@@ -15,17 +15,11 @@ UL x,y;
 UL count = 0;
 std::stringstream ss;
 
-void csere(UL e , UL k)
-{
-    //std::cout << e <<" " << k << std::endl;
-    ++count;
-    ss << e/y << " " << e%y << " " << k/y << " " << k%y << std::endl;
-}
 
 inline PUL tri_ind( UL w , UL mx , UL my )
 {
     UL max_v = mx*my/2;
-    if( w > max_v ) return {-1,-1};
+    if( w > max_v ) {std::cout << "WARNING"<< std::endl; return {-1,-1}; }
 
     UL min_dim = std::min( mx , my );
     UL tria = min_dim * (min_dim + 1) / 2;
@@ -45,11 +39,11 @@ inline PUL tri_ind( UL w , UL mx , UL my )
 
         if( mx < my )
         {
-            return { w%min_dim - 1 , w/min_dim + 1 + w%min_dim };
+            return { w%min_dim  , w/min_dim + min_dim - w%min_dim };
         }
         else
         {
-            return { min_dim - 1 + w/min_dim , w%min_dim - 1 };
+            return { w/min_dim + min_dim - w%min_dim , w%min_dim };
         }
     }
 }
@@ -82,8 +76,6 @@ struct matrix: private MUL
         return (*this)[y%size_x()][y/size_x()];
     }
 
-
-
     inline UL& get_diag( UL x ) // upper - lower
     {
         if( x <size_max()/2 )
@@ -98,7 +90,7 @@ struct matrix: private MUL
             return get_x_y( size_x() - ind.first - 1 , size_y() - ind.second - 1 );
         }
     }
-    inline UL& get_rev_diag( UL x ) // upper - lower
+    inline UL& get_rev_diag( UL x )
     {
         if( x <size_max()/2 )
         {
@@ -112,6 +104,131 @@ struct matrix: private MUL
             return get_x_y( size_x() - ind.first - 1 , ind.second );
         }
     }
+
+    inline UL& get_spiral( UL x )
+    {
+        UL all = 0;
+        UL be = 0;
+        if( x > size_max() ) std::cout << "INFINITE LOOP WARNING" << std::endl;
+        while( true )
+        {
+            UL db = ( all%2 ? size_x() : size_y() ) - 1 - be*2;
+            //std::cout << x << " " << db << std::endl;
+            if( x < db )
+            {
+                switch( all )
+                {
+                case 0 : return (*this)[be][be + x];
+                case 1 : return (*this)[be+x][size_y()-be-1];
+                case 2 : return (*this)[size_x()-be-1][size_y()-be-1-x];
+                case 3 : return (*this)[size_x()-be-1-x][be];
+                }
+            }
+            else
+            {
+                x-=db;
+                if(++all == 4)
+                {
+                    all = 0;
+                    ++be;
+                }
+            }
+        }
+    }
+
+    inline UL& get_double_spiral( UL x )
+    {
+
+        UL all = 0;
+        UL be = 0;
+        if( size_max() % 2 )
+        {
+            if( size_max()/2 == x ) return get_x_y( size_x()/2 , size_y()/2 );
+        }
+        bool v = x < size_max()/2;
+        if( !v ) x = size_max() - x - 1;
+
+        PUL p;
+        while( true )
+        {
+            UL db = ( all%2 ? size_x() : size_y() ) - 1 - be*2 + !!be;
+
+            if( x <= db )
+            {
+                switch( all )
+                {
+                case 0 : p = PUL{be,(be? be-1:0) + x}; break;
+                case 1 : p = PUL{be-1+x,size_y()-be}; break;
+                case 2 : p = PUL{size_x()-be-1,size_y()-be-x}; break;
+                case 3 : p = PUL{size_x()-be-x,be-1}; break;
+                }
+                break;
+            }
+            else
+            {
+                x-=db;
+                if(++all == 4)
+                {
+                    all = 0;
+                }
+                if( all%2 )
+                {
+                    ++be;
+                }
+            }
+        }
+        if( v ) return get_x_y(p);
+        else return get_x_y( size_x() - 1 - p.first , size_y() - 1 - p.second );
+    }
+
+
+    inline UL& get_double_spiral_transposed( UL x )
+    {
+        if( size_x() != size_y() )
+            std::cout << "WARNING!!" << std::endl;
+
+        UL all = 0;
+        UL be = 0;
+        if( size_max() % 2 )
+        {
+            if( size_max()/2 == x ) return get_x_y( size_x()/2 , size_y()/2 );
+        }
+        bool v = x < size_max()/2;
+        if( !v ) x = size_max() - x - 1;
+
+        PUL p;
+        while( true )
+        {
+            UL db = ( all%2 ? size_x() : size_y() ) - 1 - be*2 + !!be;
+
+            if( x <= db )
+            {
+                switch( all )
+                {
+                case 0 : p = PUL{be,(be? be-1:0) + x}; break;
+                case 1 : p = PUL{be-1+x,size_y()-be}; break;
+                case 2 : p = PUL{size_x()-be-1,size_y()-be-x}; break;
+                case 3 : p = PUL{size_x()-be-x,be-1}; break;
+                }
+                break;
+            }
+            else
+            {
+                x-=db;
+                if(++all == 4)
+                {
+                    all = 0;
+                }
+                if( all%2 )
+                {
+                    ++be;
+                }
+            }
+        }
+        if( v ) return get_x_y(p.second , p.first);
+        else return get_x_y( size_y() - 1 - p.second , size_x() - 1 - p.first );
+    }
+
 
     template <typename T>
     inline void csere( UL f , UL s , T fun )
@@ -140,7 +257,12 @@ struct matrix: private MUL
         ss << std::endl;
     }
 private:
-
+    UL transpose( UL n )
+    {
+        UL x = n/size_y();
+        UL y = n%size_y();
+        return y*size_y() + x;
+    }
 };
 
 MUL pe()
@@ -159,8 +281,6 @@ MUL pe()
 int main()
 {
 
-    //VUL permback{ p1,p2,p3 };
-
     std::cin >> x >> y;
     matrix m(MUL(x,VUL(y,x*y)));
 
@@ -168,7 +288,7 @@ int main()
     {
         std::cout << "TEST" <<std::endl;
         for( UL i = 0; i <m.size_max() ; ++i )
-            m.get_rev_diag( i ) = i;
+            m.get_magic_index_3( i ) = i;
 
         for( UL i = 0; i < m.size_x() ; ++i )
         {
@@ -192,7 +312,13 @@ int main()
     UL best = -1;
     VUL permofthree;
     UL bestfunct;
-    auto functions = {&matrix::get_x , &matrix::get_y , &matrix::get_diag , &matrix::get_rev_diag};
+    auto functions = {  &matrix::get_x ,
+                        &matrix::get_y ,
+                        &matrix::get_diag ,
+                        &matrix::get_rev_diag,
+                        &matrix::get_spiral,
+                        &matrix::get_double_spiral,
+                        &matrix::get_double_spiral_transposed};
 
     for( UL j = 0; j < perms.size() ; ++j )
     {
@@ -237,7 +363,7 @@ int main()
                 permofthree = perms[j];
                 bestfunct = k;
             }
-            std::cerr << k  << ". :" << counters[k] << " aka ++" << (counters[k]+1)/2 << std::endl;
+            std::cerr << k  << ". :" << counters[k] << " aka min switch " << (counters[k]+1)/2 << std::endl;
         }
     }
     db = VUL({  db[permofthree[0]],
@@ -245,10 +371,6 @@ int main()
                 db[permofthree[0]] + db[permofthree[1]] + db[permofthree[2]] });
 
     auto funct = *(std::begin( functions ) + bestfunct);
-
-
-
-    // calculate best permutation!!!
 
 
 
@@ -296,16 +418,28 @@ int main()
             ++j;
         }
     }
-    std::ofstream ofx("test/tiles_out_checker_" + std::to_string( count ) + ".out");
-    //std::ostream& ofx(std::cout);
+    //std::ofstream ofx("test/tiles_out_checker_" + std::to_string( count ) + ".out");
+    std::ostream& ofx(std::cout);
 
     UL u = 0;
     for( UL i = 0; i < m.size_max() ; ++i )
     {
-        ofx << m.get_x(i) << " ";
+        UL f = m.get_x(i);
+        switch (f) {
+            case 0:
+                std::cout << "\033[31m"; break;
+            case 1:
+                std::cout << "\033[32m"; break;
+            case 2:
+                std::cout << "\033[34m"; break;
+        }
+        ofx << f << " ";
+
+        std::cout << "\033[0m";
+
         if( ++u % y == 0 ) ofx << std::endl;
     }
-    std::cout << count << std::endl << ss.str();
+    std::cout << count << std::endl;// << ss.str();
     //*/
     return 0;
 }
