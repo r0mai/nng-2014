@@ -15,17 +15,22 @@ int main()
     std::cin >> x >> y;
 
     MUL m( x , VUL(y) );
-
+    VUL g(3);
     for( auto& x : m )
     {
         for( auto& y : x)
         {
             std::cin >> y;
+            ++g[y];
             //std::cout << y << " ";
         }
         //std::cout << std::endl;
     }
     //std::cout << std::endl;
+    std::cout << "information" << std::endl 
+            << "0 db:" << g[0] << std::endl 
+            << "1 db:" << g[1] << std::endl 
+            << "2 db:" << g[2] << std::endl; 
 
     UL c;
     std::cin >> c;
