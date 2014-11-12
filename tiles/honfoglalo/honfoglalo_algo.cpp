@@ -6,8 +6,12 @@
 #include <fstream>
 
 typedef unsigned long UL;
+typedef double LL;
 typedef std::pair<UL,UL> PUL;
 typedef std::valarray<UL> VUL;
+
+const UL kulso_konstans_1 = 6;
+const UL kulso_konstans_2 = 0;
 
 UL count = 0;
 std::stringstream ss;
@@ -63,14 +67,14 @@ struct Node
         return false;
     }
 
-    bool least_three_of_mine( UL mark )
+    bool kettoszelen( UL mark )
     {
         UL res = 0;
         for( auto sz : szomszed )
         {
-            if( sz->marked == mark ) ++res;
+            if( sz->out() && sz->marked == mark ) ++res;
         }
-        return !tobbhely( mark ) && res > 2;
+        return res > 1;
     }
 
     bool tobbhely( UL mark )
@@ -119,28 +123,31 @@ struct Node
         }
     }
 
-    void talal( UL mit , std::unordered_map< Node* , UL >& mapp , UL melyen , UL tole = UL(-1) )
+    void talal( UL mit , std::unordered_map< Node* , LL >& mapp , UL melyen , UL tole = UL(-1) )
     {
         osztalyoz = true;
         for( auto sz : szomszed )
         {
-            if( sz->marked == tole )
+            if( sz->marked == tole && !sz->tobbhely( mit ) )
             {
-                UL suly = sz->osztaly( mit , melyen , tole );
+                LL suly = sz->osztaly( mit , melyen , tole );
                 if( mapp[ sz ] < suly )
                     mapp[ sz ] = suly;
             }
         }
-        osztalyoz = true;
+        osztalyoz = false;
     }
 
-    UL osztaly( UL mi_szerint , UL melyen , UL tole )
+    LL osztaly( UL mi_szerint , UL melyen , UL tole )
     {
-        if( tole == UL(-1) && marked != UL(-1) ) return 0;
+        if( ( tole == UL(-1) && marked != UL(-1) ) || tobbhely( mi_szerint ) ) return 0;
 
-        UL res = (ertek == mi_szerint) ? 200 * csoport->size() : 20;
+        LL group = csoport->size();
+        LL x = 1ULL << melyen * 2;
+        LL res = (ertek == mi_szerint) ? x * group : 1./(x + group);
 
-        if( tole != UL(-1) ) res *= marked == UL(-1) ? 200 * csoport->size() : 3;
+        // TODO
+        //if( tole != UL(-1) ) res *= marked == UL(-1) ? 2 : 0.5;
 
         if( melyen )
         {
@@ -149,7 +156,7 @@ struct Node
             {
                 if( sz->osztalyoz == false )
                 {
-                    res += sz->osztaly( mi_szerint , melyen - 1 , tole ) / 20;
+                    res += sz->osztaly( mi_szerint , melyen - 1 , tole ) * szomszed.size();
                 }
             }
             osztalyoz = false;
@@ -176,14 +183,14 @@ struct Area
     {
         if(mine.size() == max) return true;
 
-        std::unordered_map<Node*,UL> lehets;
+        std::unordered_map<Node*,LL> lehets;
 
         for( auto it = mine.begin() ; it != mine.end() ; ++it )
         {
-            (*it)->talal( need , lehets , 6 );
+            (*it)->talal( need , lehets , kulso_konstans_1 );
         }
 
-        UL max = 0;
+        LL max = 0;
         Node* max_n = NULL;
         for( auto leh : lehets )
         {
@@ -191,6 +198,7 @@ struct Area
             {
                 if( leh.first->tobbhely( need ) )
                 {
+                    std::cout << "BUG" << std::endl;
                     //std::cout << need << " OUT BC tobbhely" << leh.first->koord.first << "  - " << leh.first->koord.second << std::endl;
                     continue;
                 }
@@ -206,7 +214,9 @@ struct Area
         }
 
         if( max_n == NULL ) return false;
+
         out|= max_n->out();
+
         max_n->marked = need;
 
         mine.push_back( max_n );
@@ -216,14 +226,14 @@ struct Area
 
     bool help( Area& neki )
     {
-        std::unordered_map<Node*,UL> lehets;
+        std::unordered_map<Node*,LL> lehets;
 
         for( auto it = mine.begin() ; it != mine.end() ; ++it )
         {
-            (*it)->talal( need , lehets , 8 , neki.need );
+            (*it)->talal( need , lehets , kulso_konstans_2 , neki.need );
         }
 
-        UL max = 0;
+        LL max = 0;
         Node* max_n = NULL;
         for( auto leh : lehets )
         {
@@ -232,7 +242,8 @@ struct Area
                 // ++ feltetelek!!!
                 if( leh.first->tobbhely( need ) ) continue;
                 if( out && !leh.first->neigh_mine( need ) ) continue;
-                if( !leh.first->least_three_of_mine( neki.need ) ) continue;
+                if( leh.first->tobbhely( neki.need ) ) continue;
+                if( leh.first->kettoszelen( neki.need ) ) continue;
 
                 max_n = leh.first;
                 max = leh.second;
@@ -267,7 +278,7 @@ void kiir( const Graph& g )
     {
         for( auto n : v )
         {
-            std::cout << "\033[" << (4 >> ( n.csoport->csopID/7 % 3 ) ) << ";" << n.csoport->csopID%7 + 31 <<"m";
+            //std::cout << "\033[" << (4 >> ( n.csoport->csopID/7 % 3 ) ) << ";" << n.csoport->csopID%7 + 31 <<"m";
 
             switch (n.marked)
             {
@@ -345,12 +356,16 @@ int main()
 
     std::vector<Node*> beginNs( 3 );
     VUL maxx( 3 );
+    int i = 0;
     for( auto gr : groups )
     {
         if( maxx[gr.ertek] < gr.size() )
         {
-            beginNs[gr.ertek] = gr.tagok[0];
-            maxx[gr.ertek] = gr.size();
+            if( ++i % 2 )
+            {
+                beginNs[gr.ertek] = gr.tagok[gr.size()/2];
+                maxx[gr.ertek] = gr.size();
+            }
         }
     }
     areas.push_back( Area( beginNs[0] , db[0] ) );
@@ -359,13 +374,20 @@ int main()
 
     kiir( nodeMat );
     UL n_it = db.max();
-
     for( UL i = 0 ; i < n_it ; ++i )
     {
+        if( i % 10 == 0 )
+        {
+            //kiir( nodeMat );
+            std::cout << i << std::endl;
+            //std::cin.get();
+
+        }
         for( auto it = areas.begin() ; it != areas.end() ; ++it )
         {
             if( !it->step() )
             {
+
                 //std::cout << "SEGITSEG" << std::endl;
                 auto it2 = it ;
                 while( ++it2 != it )
@@ -379,7 +401,6 @@ int main()
                 }
             }
         }
-    //    std::cin.get();
     }
     kiir( nodeMat );
 
