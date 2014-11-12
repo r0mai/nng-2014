@@ -8,20 +8,27 @@
 
 #include "common.hpp"
 
-tiles_t read_from_cin() {
+tiles_t read_from(std::istream& in) {
     unsigned rows, columns;
 
-    std::cin >> rows >> columns;
+    in >> rows >> columns;
 
     tiles_t tiles(boost::extents[columns][rows]);
 
     for (unsigned y = 0; y < rows; ++y) {
         for (unsigned x = 0; x < columns; ++x) {
-            std::cin >> tiles[x][y];
+            in >> tiles[x][y];
         }
     }
 
     return tiles;
+}
+
+void print_swaps(const swaps_t& swaps) {
+    std::cout << swaps.size() << "\n";
+    for (auto x : swaps) {
+        std::cout << get<0>(x).y << " " << get<0>(x).x << " " << get<1>(x).y << " " << get<1>(x).x << "\n";
+    }
 }
 
 vertex_property& get_vertex_property(vertex_descriptor vertex, graph_t& graph) {
@@ -87,6 +94,19 @@ void print_tiles(const tiles_t& tiles) {
             std::cerr << "\033[0m";
         }
         std::cerr << std::endl;
+    }
+}
+
+void print_tiles_as_input(const tiles_t& tiles) {
+    unsigned columns = tiles.shape()[0];
+    unsigned rows = tiles.shape()[1];
+
+    std::cout << rows << " " << columns << std::endl;
+    for (unsigned y = 0; y < rows; ++y) {
+        for (unsigned x = 0; x < columns; ++x) {
+            std::cout << tiles[x][y] << " ";
+        }
+        std::cout << std::endl;
     }
 }
 
@@ -299,35 +319,32 @@ bit_tiles_t to_bit_tiles(const tiles_t& tiles) {
 
 // REALM OF CELLS
 
-struct CellularRunner {
-    CellularRunner(const tiles_t& tiles) :
-        tiles(tiles), score_matrix(boost::extents[tiles.shape()[0]][tiles.shape()[1]]) {}
-
-    void run();
-
-    typedef std::array<int, 3> score_t;
-    typedef boost::multi_array<score_t, 2> score_matrix_t;
-
-    score_t get_score(const position_t& pos);
-    void get_score_matrix();
-    void update_score_matrix_around(const position_t& pos);
-
-    position_t get_minimal(int color);
-    position_t get_maximal(int color);
-
-    void do_swap(const swap_t& swap);
-    void print_swaps();
-
-    tiles_t tiles;
-    score_matrix_t score_matrix;
-    unsigned radius = 10;
-
-    std::vector<swap_t> swaps;
-};
-
 void do_cellular(const tiles_t& tiles) {
     CellularRunner runner(tiles);
     runner.run();
+}
+
+swap_t CellularRunner::get_best_swap() {
+    std::array<std::pair<swap_t, unsigned>, 3> swaps =
+    {{
+        std::make_pair(swap_t(get_minimal(0), get_maximal(0)), 0),
+        std::make_pair(swap_t(get_minimal(1), get_maximal(1)), 1),
+        std::make_pair(swap_t(get_minimal(2), get_maximal(2)), 2)
+    }};
+
+    std::sort(swaps.begin(), swaps.end(),
+            [&](auto x, auto y) -> bool {
+                return
+                score_matrix
+                [std::get<1>(x.first).x][std::get<1>(x.first).y][x.second] -
+                score_matrix
+                [std::get<0>(x.first).x][std::get<0>(x.first).y][x.second] <
+                score_matrix
+                [std::get<1>(y.first).x][std::get<1>(y.first).y][y.second] -
+                score_matrix
+                [std::get<0>(y.first).x][std::get<0>(y.first).y][y.second];
+            });
+    return swaps.back().first;
 }
 
 position_t CellularRunner::get_minimal(int color) {
@@ -341,7 +358,9 @@ position_t CellularRunner::get_minimal(int color) {
             if (tiles[x][y] != color) {
                 continue;
             }
-            if (!minimal || score_matrix[minimal->x][minimal->y][color] > score_matrix[x][y][color]) {
+            if (!minimal || score_matrix[minimal->x][minimal->y][color] >
+                    score_matrix[x][y][color])
+            {
                 minimal = {x, y};
             }
         }
@@ -360,7 +379,9 @@ position_t CellularRunner::get_maximal(int color) {
             if (tiles[x][y] == color) {
                 continue;
             }
-            if (!maximal || score_matrix[maximal->x][maximal->y][color] < score_matrix[x][y][color]) {
+            if (!maximal || score_matrix[maximal->x][maximal->y][color] <
+                    score_matrix[x][y][color])
+            {
                 maximal = {x, y};
             }
         }
@@ -378,14 +399,11 @@ void CellularRunner::run() {
 
     get_score_matrix();
 
-    for (int i = 0; i < 1000 /*&& !is_done(tiles)*/; ++i) {
-        for (int c = 0; c < 3; ++c) {
-            position_t min = get_minimal(c);
-            position_t max = get_maximal(c);
-            do_swap(swap_t(min, max));
-            update_score_matrix_around(min);
-            update_score_matrix_around(max);
-        }
+    for (int i = 0; i < 2000 /*&& !is_done(tiles)*/; ++i) {
+        swap_t swap = get_best_swap();
+        do_swap(swap);
+        update_score_matrix_around(std::get<0>(swap));
+        update_score_matrix_around(std::get<1>(swap));
         if (i % 100 == 0) {
             print_tiles(tiles);
             std::cerr << i << " : " << get_islands(tiles).size() << std::endl;
@@ -396,7 +414,7 @@ void CellularRunner::run() {
     print_tiles(tiles);
 
     std::cerr << "Finished islands = " << get_islands(tiles).size() << std::endl;
-    print_swaps();
+    print_tiles_as_input(tiles);
 }
 
 CellularRunner::score_t CellularRunner::get_score(const position_t& pos) {
@@ -415,7 +433,7 @@ CellularRunner::score_t CellularRunner::get_score(const position_t& pos) {
                 unsigned d = std::abs(int(x) - int(pos.x)) + std::abs(int(y) - int(pos.y));
                 if (d > radius || tiles[x][y] != i) continue;
 
-                score[i] += (1u << (radius - d));
+                score[i] += (1ull << (radius - d));
             }
         }
     }
@@ -450,8 +468,34 @@ void CellularRunner::do_swap(const swap_t& swap) {
 }
 
 void CellularRunner::print_swaps() {
-    std::cout << swaps.size() << "\n";
-    for (auto x : swaps) {
-        std::cout << get<0>(x).x << " " << get<0>(x).y << " " << get<1>(x).x << " " << get<1>(x).y << "\n";
-    }
+    ::print_swaps(swaps);
 }
+
+swaps_t do_from_to(tiles_t from, const tiles_t& to) {
+    unsigned columns = from.shape()[0];
+    unsigned rows = from.shape()[1];
+
+    swaps_t swaps;
+    for (unsigned y = 0; y < rows; ++y) {
+        for (unsigned x = 0; x < columns; ++x) {
+            if (from[x][y] != to[x][y]) {
+                int needed_color = to[x][y];
+                for (unsigned y2 = y; y2 < rows; ++y2) {
+                    for (unsigned x2 = x; x2 < columns; ++x2) {
+                        if (from[x2][y2] != to[x2][y2] &&
+                            from[x2][y2] == needed_color)
+                        {
+                            std::swap(from[x][y], from[x2][y2]);
+                            swaps.push_back(swap_t({x, y}, {x2, y2}));
+                            goto continue_outer;
+                        }
+                    }
+                }
+                continue_outer: ;
+            }
+        }
+    }
+    return swaps;
+}
+
+

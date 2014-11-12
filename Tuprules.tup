@@ -4,9 +4,9 @@ CC = gcc
 CXX = g++
 LD = $(CXX)
 
-CPPFLAGS += -O0
+CPPFLAGS += -O2
 CPPFLAGS += -g
-CPPFLAGS += -std=c++11
+CPPFLAGS += -std=c++14
 CPPFLAGS += -Wall -Wextra
 
 LDFLAGS =

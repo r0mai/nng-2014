@@ -25,6 +25,8 @@ typedef std::vector<position_t> positions_t;
 typedef std::tuple<position_t, position_t> swap_t;
 typedef std::vector<swap_t> swaps_t;
 
+void print_swaps(const swaps_t& swaps);
+
 struct island_t {
     island_t() = default;
     island_t(int color, unsigned index, const positions_t& positions) :
@@ -66,13 +68,14 @@ typedef boost::graph_traits<graph_t>::edge_iterator edge_iterator;
 typedef boost::graph_traits<graph_t>::in_edge_iterator in_edge_iterator;
 typedef boost::graph_traits<graph_t>::out_edge_iterator out_edge_iterator;
 
-tiles_t read_from_cin();
+tiles_t read_from(std::istream& in = std::cin);
 vertex_property& get_vertex_property(vertex_descriptor vertex, graph_t& graph);
 edge_property& get_edge_property(edge_descriptor edge, graph_t& graph);
 graph_t create_graph(const tiles_t& tiles);
 graph_t get_color_graph(graph_t graph, int color);
 
 void print_tiles(const tiles_t& tiles);
+void print_tiles_as_input(const tiles_t& tiles);
 
 bool is_done(const tiles_t& tiles);
 
@@ -111,12 +114,42 @@ void set_bit(bit_matrix_t& m, const position_t& p) {
 }
 
 inline
-void unset_bit(bit_matrix_t& m, const position_t& p) {
+void utdnset_bit(bit_matrix_t& m, const position_t& p) {
     m[p.y] &= ~(1 << p.x);
 }
 
 inline bool get_bit(const bit_matrix_t& m, const position_t& p) {
     return m[p.y] & (1 << p.x);
 }
+
+struct CellularRunner {
+    CellularRunner(const tiles_t& tiles) :
+        tiles(tiles),
+        score_matrix(boost::extents[tiles.shape()[0]][tiles.shape()[1]]) {}
+
+    void run();
+
+    typedef std::array<long long, 3> score_t;
+    typedef boost::multi_array<score_t, 2> score_matrix_t;
+
+    score_t get_score(const position_t& pos);
+    void get_score_matrix();
+    void update_score_matrix_around(const position_t& pos);
+    swap_t get_best_swap();
+
+    position_t get_minimal(int color);
+    position_t get_maximal(int color);
+
+    void do_swap(const swap_t& swap);
+    void print_swaps();
+
+    tiles_t tiles;
+    score_matrix_t score_matrix;
+    unsigned radius = 32;
+
+    std::vector<swap_t> swaps;
+};
+
+swaps_t do_from_to(tiles_t from, const tiles_t& to);
 
 #endif
