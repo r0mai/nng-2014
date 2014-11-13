@@ -53,5 +53,44 @@ int main()
             }
         }
     }
+
+    std::vector<NodePtr> beginNs( 3 );
+    Ertekek maxx( 3 );
+    int i = 0;
+    for( auto gr : groups )
+    {
+        if( maxx[gr.ertek] < gr.size() )
+        {
+            if( ++i % 2 )
+            {
+                beginNs[gr.ertek] = gr.tagok[gr.size()/2];
+                maxx[gr.ertek] = gr.size();
+            }
+        }
+    }
+    areas.push_back( Area( beginNs[0] , db[0] ) );
+    areas.push_back( Area( beginNs[1] , db[1] ) );
+    areas.push_back( Area( beginNs[2] , db[2] ) );
+
+
+    for( Termeszetes i = 0;
+        areas[0].vege() &&
+        areas[1].vege() &&
+        areas[3].vege() ; ++i %= 3)
+    {
+        if( !areas[i].lepes() )
+        {
+            Ertek kitol = areas[i].lop();
+            areas[kitol].lepes();
+        }
+    };
     kiir( nodeMat );
+    rendez( areas );
+    kiir( nodeMat );
+
+    std::cout << "db : " << count << std::endl;
+    std::ofstream ofs("ki_"+std::to_string(count)+".out");
+
+    ofs << count << std::endl << ss.str();
+
 }

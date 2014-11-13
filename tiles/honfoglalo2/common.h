@@ -42,6 +42,7 @@ void my_swap( T& a , T& b )
 void kiir( const NodeMatrix& g );
 void segitseg( Area& , Area& );
 void csere( Area& , Area& , Area& );
+void rendez( Areas& );
 
 struct Group
 {
@@ -65,9 +66,10 @@ struct Area
     Area( NodePtr beginNode , Ertek max );
 
     bool lepes();
+    bool vege();
+    Ertek lop();
     void hozzaad( NodePtr );
     void elvesz( NodePtr );
-    friend void segitseg( Area& , Area& );
     friend void csere( Area& , Area& , Area& );
 };
 

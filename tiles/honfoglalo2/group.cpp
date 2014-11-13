@@ -7,7 +7,7 @@ Group::Group( Ertek ert , Termeszetes csopid ):
 
 }
 
-inline Termeszetes Group::size() const
+Termeszetes Group::size() const
 {
     return tagok.size();
 }
