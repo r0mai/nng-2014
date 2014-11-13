@@ -10,7 +10,7 @@ void kiir( const NodeMatrix& g )
     {
         for( auto n : v )
         {
-            //std::cout << "\033[" << (4 >> ( n.csoport->csopID/7 % 3 ) ) << ";" << n.csoport->csopID%7 + 31 <<"m";
+            std::cout << "\033[" << (4 >> ( n.csoport->csopID/7 % 3 ) ) << ";" << n.csoport->csopID%7 + 31 <<"m";
             switch (n.foglalt)
             {
                 case 0:

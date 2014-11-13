@@ -1,7 +1,14 @@
 #include "common.h"
 
-Node::Node( const Koordinata& k , Ertek e , Ertek f ):
-    koord(k),ertek(e),foglalt(f),csoport(nullptr){}
+Node::Node(){}
+
+void Node::beallit( const Koordinata& k , Ertek e , Ertek f )
+{
+    koord = k;
+    ertek = e;
+    foglalt = f;
+    csoport = nullptr;
+}
 
 bool Node::szelen_vagyok_e()
 {

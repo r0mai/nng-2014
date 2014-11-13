@@ -49,7 +49,7 @@ struct Group
     Ertek ertek;
     Termeszetes csopID;
 
-    Group( NodePtr kezdo , Ertek ert , Termeszetes csopid );
+    Group( Ertek ert , Termeszetes csopid );
 
     Termeszetes size() const;
 };
@@ -83,7 +83,8 @@ struct Node
 
     std::vector<NodePtr> rendezett_szomszed;
 
-    Node( const Koordinata&, Ertek, Ertek = invalid );
+    Node();
+    void beallit( const Koordinata&, Ertek, Ertek = invalid );
 
     bool szelen_vagyok_e();
     Termeszetes szelen_levo_szomszedok( Ertek ki );
