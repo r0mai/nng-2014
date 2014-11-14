@@ -1,6 +1,7 @@
 #ifndef COMMON_HPP_
 #define COMMON_HPP_
 
+#include <iostream>
 #include <cassert>
 
 #include <boost/foreach.hpp>
