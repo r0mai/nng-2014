@@ -85,11 +85,12 @@ void Renderer::draw() {
                     sf::Vector2f(width/columns, height/rows));
             rect.setPosition(x * width/columns, y * height/rows);
             rect.setFillColor(getColor(tiles_original[x][y]));
-            rect.setOutlineColor(sf::Color::Black);
-            rect.setOutlineThickness(1.f);
+            rect.setOutlineColor(getColor(tiles_result[x][y]));
+            rect.setOutlineThickness(3.f);
 
             if (marked && *marked == position_t{x, y}) {
                 rect.setFillColor(darken(rect.getFillColor()));
+                rect.setOutlineColor(darken(rect.getOutlineColor()));
             }
             window.draw(rect);
         }
