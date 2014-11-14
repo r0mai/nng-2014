@@ -8,6 +8,10 @@
 
 #include "common.hpp"
 
+bool operator==(const position_t& lhs, const position_t& rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
 tiles_t read_from(std::istream& in) {
     unsigned rows, columns;
 

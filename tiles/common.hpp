@@ -21,6 +21,8 @@ struct position_t {
     unsigned x, y;
 };
 
+bool operator==(const position_t& lhs, const position_t& rhs);
+
 typedef std::vector<position_t> positions_t;
 
 typedef std::tuple<position_t, position_t> swap_t;
