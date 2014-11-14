@@ -2,6 +2,7 @@
 #include "Renderer.hpp"
 
 #include <cassert>
+#include <algorithm>
 
 sf::Color getColor(int color) {
     switch (color) {
@@ -23,7 +24,7 @@ sf::Color darken(const sf::Color& c) {
 Renderer::Renderer() :
     tiles_original(read_from()),
     tiles_result(read_from()),
-    window(sf::VideoMode(640, 640), "Tiles GUI") {}
+    window(sf::VideoMode(768, 768), "Tiles GUI") {}
 
 
 void Renderer::run() {
@@ -66,6 +67,9 @@ void Renderer::handleMouseButtonPressedEvent(
 
     if (marked && *marked == position_t{x, y}) {
         marked = boost::none;
+    } else if (marked) {
+        do_swap(*marked, position_t{x, y});
+        marked = boost::none;
     } else {
         marked = position_t{x, y};
     }
@@ -79,23 +83,38 @@ void Renderer::draw() {
     float width = window.getSize().x;
     float height = window.getSize().y;
 
+    const float outline_width = 3.f;
+
     for (unsigned y = 0; y < rows; ++y) {
         for (unsigned x = 0; x < columns; ++x) {
             sf::RectangleShape rect(
                     sf::Vector2f(width/columns, height/rows));
+
+            sf::RectangleShape rect_in(
+                    sf::Vector2f(
+                        width/columns - 2*outline_width,
+                        height/rows - 2*outline_width));
+
             rect.setPosition(x * width/columns, y * height/rows);
-            rect.setFillColor(getColor(tiles_original[x][y]));
-            rect.setOutlineColor(getColor(tiles_result[x][y]));
-            rect.setOutlineThickness(3.f);
+            rect.setFillColor(getColor(tiles_result[x][y]));
+
+            rect_in.setPosition(
+                    x * width/columns + outline_width,
+                    y * height/rows + outline_width);
+            rect_in.setFillColor(getColor(tiles_original[x][y]));
 
             if (marked && *marked == position_t{x, y}) {
                 rect.setFillColor(darken(rect.getFillColor()));
-                rect.setOutlineColor(darken(rect.getOutlineColor()));
+                rect_in.setFillColor(darken(rect_in.getFillColor()));
             }
             window.draw(rect);
+            window.draw(rect_in);
         }
     }
 
     window.display();
 }
 
+void Renderer::do_swap(const position_t& lhs, const position_t& rhs) {
+    std::swap(tiles_result[lhs.x][lhs.y], tiles_result[rhs.x][rhs.y]);
+}

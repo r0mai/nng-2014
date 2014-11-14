@@ -19,6 +19,8 @@ struct Renderer {
     void handleMouseButtonPressedEvent(const sf::Event::MouseButtonEvent& ev);
     void draw();
 
+    void do_swap(const position_t& lhs, const position_t& rhs);
+
     tiles_t tiles_original;
     tiles_t tiles_result;
 
