@@ -73,13 +73,15 @@ struct IVSet
 void runtests(BloodBank& bank)
 {
     const U N = bank.getNumberOfSamples();
-    U M = N / 10; // max!!
+    U M = std::ceil( N / 10. ); // max!!
 
     if( !M ) M = 1;
 
     U need = std::ceil( N * 0.8 );
 
     double K = 2.;
+
+    if( N <= 100 ) K = 4.;
 
     IVSet ivset(std::vector< U >( 1 ),
                 std::vector< U >( 1 , N ),
@@ -107,13 +109,16 @@ void runtests(BloodBank& bank)
                   << std::endl;*/
         if( db - ( db / K ) > need )
         {
-            number = M + std::ceil( need * M * K / db );
-            /*std::cerr << "simplY!!! to " << number << std::endl;*/
+            
+            number = M + std::ceil( need * M * K / db ) + 1; // need / ( db / testnum ); //
+            // ki kéne számolni, hogy várhatóan mennyit teszünk bele, és annyi "halmazt" beletenni, amennyiben ha a max-ok rosszak, akkor is jók legyünk.
+            std::cerr << testnum << "simplY!!! to " << number << std::endl;
         }
 
         for( U i = 1 ; i <= number ; ++i )
         {
             ig = db * i / testnum;
+            std::cerr << (int)c << "max" << need  << " " << tol << " " << ig << std::endl; 
 
             if(ig > tol)
             {
@@ -161,6 +166,11 @@ void runtests(BloodBank& bank)
         if( b ) return;
 
         ivset = newSet;
+        
+        if( c == 0 && M / static_cast<double>(need) > 2 )
+            M += 1;
+        if( c == 1 && M / static_cast<double>(need) > 4/3. )
+            K = 5.;
     }
 
     std::cerr << "HELP ME GOD" << std::endl;
