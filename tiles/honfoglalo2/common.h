@@ -67,7 +67,7 @@ struct Area
 
     bool lepes();
     bool vege();
-    Ertek lop();
+    NodePtr lop();
     void hozzaad( NodePtr );
     void elvesz( NodePtr );
     friend void csere( Area& , Area& , Area& );

@@ -44,7 +44,7 @@ struct IVSet
 
     inline U getValue( const U& elem )
     {
-        return 
+        return
             transl[
             getValue_( elem , getSetIndex( elem ) )
             ]
@@ -65,7 +65,7 @@ struct IVSet
 
     inline void add( const U& elem )
     {
-        if( setEnds.size() && 
+        if( setEnds.size() &&
             transl[
             begins.back() + sizes.back()
             ]
@@ -76,10 +76,10 @@ struct IVSet
         }
         else
         {
-            begins.push_back( 
+            begins.push_back(
             b_transl[
-            elem 
-            ] 
+            elem
+            ]
             );
             sizes.push_back( 1 );
             setEnds.push_back( size() + 1 );
@@ -87,11 +87,11 @@ struct IVSet
     }
 };
 
-
+double maxi = 0;
 void runtests(BloodBank& bank)
 {
     const U N = bank.getNumberOfSamples();
-
+    //std::cerr << "N:" << N << "\t" << N*0.4 << "\t" << (maxi+=N*0.4) << "\t";
     transl.resize( N );
     b_transl.resize( N );
     for( U i = 0; i < N ; ++i )
@@ -113,7 +113,7 @@ void runtests(BloodBank& bank)
 
     U need = std::ceil( N * 0.8 );
 
-    double K = 2.;
+    double K = 2. - (N>99 ? N / 3333333. : 0);
 
     //if( N <= 100 ) K = 5.;
 
@@ -157,7 +157,7 @@ void runtests(BloodBank& bank)
                 que.push( halm_db );
                 if( que.size() > M )
                 {
-                    //std::cout << que.top() << " "; 
+                    //std::cout << que.top() << " ";
                     sum += que.top();
                     que.pop();
                 }
@@ -175,7 +175,7 @@ void runtests(BloodBank& bank)
         for( U i = 1 ; i <= number ; ++i )
         {
             ig = db * i / testnum;
-            //std::cerr << (int)c << "max" << db << " need" << need  << " " << tol << " " << ig << std::endl; 
+            //std::cerr << (int)c << "max" << db << " need" << need  << " " << tol << " " << ig << std::endl;
 
             if(ig > tol)
             {
