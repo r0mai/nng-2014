@@ -1,0 +1,7 @@
+
+include_rules
+
+LDFLAGS += -lsfml-graphics -lsfml-window -lsfml-system
+
+: foreach *.cpp |> !cxx |>
+: *.o ../common.o |> !linker |> gui
