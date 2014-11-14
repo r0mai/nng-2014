@@ -123,6 +123,7 @@ void Renderer::do_swap(const position_t& lhs, const position_t& rhs) {
 
 std::string Renderer::get_title() {
     std::stringstream ss;
-    ss << std::boolalpha << "done = " << is_done(tiles_result);
+    ss << std::boolalpha << "done = " << is_done(tiles_result)
+       << ", score = " << get_score(tiles_original, tiles_result);
     return ss.str();
 }

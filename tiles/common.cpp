@@ -131,69 +131,51 @@ namespace {
 unsigned get_score(const tiles_t& original, const tiles_t& result) {
     //Based on Bela's algorithm
 
-    auto pred0 = [](int c) { return c == 0; };
-    auto pred1 = [](int c) { return c == 1; };
-    auto pred2 = [](int c) { return c == 2; };
+    std::array<std::vector<position_t>, 3> areas;
 
-    auto begin0 = boost::make_filter_iterator(
-            pred0,
-            result.data(),
-            result.data() + result.num_elements());
-    auto begin1 = boost::make_filter_iterator(
-            pred1,
-            result.data(),
-            result.data() + result.num_elements());
-    auto begin2 = boost::make_filter_iterator(
-            pred2,
-            result.data(),
-            result.data() + result.num_elements());
+    unsigned columns = original.shape()[0];
+    unsigned rows = original.shape()[1];
 
-    auto end0 = boost::make_filter_iterator(
-            pred0,
-            result.data() + result.num_elements(),
-            result.data() + result.num_elements());
-    auto end1 = boost::make_filter_iterator(
-            pred1,
-            result.data() + result.num_elements(),
-            result.data() + result.num_elements());
-    auto end2 = boost::make_filter_iterator(
-            pred2,
-            result.data() + result.num_elements(),
-            result.data() + result.num_elements());
+    for (unsigned y = 0; y < rows; ++y) {
+        for (unsigned x = 0; x < columns; ++x) {
+            areas[result[x][y]].push_back({x, y});
+        }
+    }
 
+    auto begin0 = areas[0].begin();
+    auto begin1 = areas[1].begin();
+    auto begin2 = areas[2].begin();
+    auto end0 = areas[0].end();
+    auto end1 = areas[1].end();
+    auto end2 = areas[2].end();
 
-    auto get_original = [&](const int& index) {
-        return index_into_other(result, index, original);
-    };
     unsigned swap_count = 0;
-    auto my_swap = [&]() {
+
+    auto get_original = [&](position_t p) { return original[p.x][p.y]; };
+    auto my_swap = [&](auto lhs, auto rhs) {
+        std::swap(*lhs, *rhs);
         ++swap_count;
     };
 
-    while( begin0 != end0 || begin1 != end1 )
+    while( begin0 < end0 || begin1 < end1 )
     {
-        while ( begin0 != end0 && get_original(*begin0) == 0) {
-            ++begin0;
-        }
-        while ( begin1 != end1 && get_original(*begin1) == 1) {
-            ++begin1;
-        }
-        while ( begin2 != end2 && get_original(*begin1) == 2) {
-            ++begin2;
-        }
-        if( begin0 < end0 && get_original(*begin0) == 1)
+        while ( begin0 < end0 && get_original(*begin0) == 0 ) ++begin0;
+        while ( begin1 < end1 && get_original(*begin1) == 1 ) ++begin1;
+        while ( begin2 < end2 && get_original(*begin2) == 2 ) ++begin2;
+        if( begin0 < end0 && get_original(*begin0) == 1 )
         {
             auto it = begin1;
             while( it < end1 && get_original(*it) != 0 ) ++it;
             if( it == end1 )
             {
-                my_swap( begin0 , it );
+                my_swap( begin0 , it = begin1 );
             }
             else
             {
                 my_swap( begin0, it );
                 ++begin0;
             }
+            if( it == begin1 ) ++begin1;
         }
         else if( begin0 < end0 && get_original(*begin0) == 2 )
         {
@@ -201,13 +183,14 @@ unsigned get_score(const tiles_t& original, const tiles_t& result) {
             while( it < end2 && get_original(*it) != 0 ) ++it;
             if( it == end2 )
             {
-                my_swap( begin0 , it );
+                my_swap( begin0 , it = begin2 );
             }
             else
             {
                 my_swap( begin0, it );
                 ++begin0;
             }
+            if( it == begin2 ) ++begin2;
         }
         else if( begin1 < end1 && begin2 < end2 )
         {
