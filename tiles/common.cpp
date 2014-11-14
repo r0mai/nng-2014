@@ -31,8 +31,9 @@ tiles_t read_from(std::istream& in) {
 
 void print_swaps(const swaps_t& swaps, std::ostream& out) {
     out << swaps.size() << "\n";
-    for (auto x : swaps) {
-        out << get<0>(x).y << " " << get<0>(x).x << " " << get<1>(x).y << " " << get<1>(x).x << "\n";
+    for (auto p : swaps) {
+        out << get<0>(p).y << " " << get<0>(p).x << " "
+            << get<1>(p).y << " " << get<1>(p).x << "\n";
     }
 }
 
