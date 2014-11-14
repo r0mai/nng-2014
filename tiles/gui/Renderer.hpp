@@ -20,6 +20,7 @@ struct Renderer {
     void draw();
 
     void do_swap(const position_t& lhs, const position_t& rhs);
+    std::string get_title();
 
     tiles_t tiles_original;
     tiles_t tiles_result;

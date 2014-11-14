@@ -2,6 +2,7 @@
 #include "Renderer.hpp"
 
 #include <cassert>
+#include <sstream>
 #include <algorithm>
 
 sf::Color getColor(int color) {
@@ -24,7 +25,7 @@ sf::Color darken(const sf::Color& c) {
 Renderer::Renderer() :
     tiles_original(read_from()),
     tiles_result(read_from()),
-    window(sf::VideoMode(768, 768), "Tiles GUI") {}
+    window(sf::VideoMode(768, 768), get_title()) {}
 
 
 void Renderer::run() {
@@ -117,4 +118,11 @@ void Renderer::draw() {
 
 void Renderer::do_swap(const position_t& lhs, const position_t& rhs) {
     std::swap(tiles_result[lhs.x][lhs.y], tiles_result[rhs.x][rhs.y]);
+    window.setTitle(get_title());
+}
+
+std::string Renderer::get_title() {
+    std::stringstream ss;
+    ss << std::boolalpha << "done = " << is_done(tiles_result);
+    return ss.str();
 }
