@@ -4,6 +4,7 @@
 #include <cassert>
 #include <sstream>
 #include <algorithm>
+#include <fstream>
 
 sf::Color getColor(int color) {
     switch (color) {
@@ -25,7 +26,9 @@ sf::Color darken(const sf::Color& c) {
 Renderer::Renderer() :
     tiles_original(read_from()),
     tiles_result(read_from()),
-    window(sf::VideoMode(768, 768), get_title()) {}
+    window(sf::VideoMode(768, 768),
+            get_title(is_done(tiles_result),
+                get_swaps(tiles_original, tiles_result).size())) {}
 
 
 void Renderer::run() {
@@ -118,12 +121,23 @@ void Renderer::draw() {
 
 void Renderer::do_swap(const position_t& lhs, const position_t& rhs) {
     std::swap(tiles_result[lhs.x][lhs.y], tiles_result[rhs.x][rhs.y]);
-    window.setTitle(get_title());
+
+    bool done = is_done(tiles_result);
+    swaps_t swaps = get_swaps(tiles_original, tiles_result);
+    window.setTitle(get_title(done, swaps.size()));
+
+    if (done) {
+        if (!min_score || *min_score > swaps.size()) {
+            min_score = swaps.size();
+            std::ofstream out("tiles_manual_" + std::to_string(*min_score) + ".out");
+            print_swaps(swaps, out);
+        }
+    }
 }
 
-std::string Renderer::get_title() {
+std::string Renderer::get_title(bool is_done, unsigned score) {
     std::stringstream ss;
-    ss << std::boolalpha << "done = " << is_done(tiles_result)
-       << ", score = " << get_score(tiles_original, tiles_result);
+    ss << std::boolalpha << "done = " << is_done
+       << ", score = " << score;
     return ss.str();
 }

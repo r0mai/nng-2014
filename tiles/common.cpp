@@ -29,10 +29,10 @@ tiles_t read_from(std::istream& in) {
     return tiles;
 }
 
-void print_swaps(const swaps_t& swaps) {
-    std::cout << swaps.size() << "\n";
+void print_swaps(const swaps_t& swaps, std::ostream& out) {
+    out << swaps.size() << "\n";
     for (auto x : swaps) {
-        std::cout << get<0>(x).y << " " << get<0>(x).x << " " << get<1>(x).y << " " << get<1>(x).x << "\n";
+        out << get<0>(x).y << " " << get<0>(x).x << " " << get<1>(x).y << " " << get<1>(x).x << "\n";
     }
 }
 
@@ -128,7 +128,7 @@ namespace {
     }
 }
 
-unsigned get_score(const tiles_t& original, const tiles_t& result) {
+swaps_t get_swaps(const tiles_t& original, const tiles_t& result) {
     //Based on Bela's algorithm
 
     std::array<std::vector<position_t>, 3> areas;
@@ -149,12 +149,12 @@ unsigned get_score(const tiles_t& original, const tiles_t& result) {
     auto end1 = areas[1].end();
     auto end2 = areas[2].end();
 
-    unsigned swap_count = 0;
+    swaps_t swaps;
 
     auto get_original = [&](position_t p) { return original[p.x][p.y]; };
     auto my_swap = [&](auto lhs, auto rhs) {
         std::swap(*lhs, *rhs);
-        ++swap_count;
+        swaps.push_back(swap_t{*lhs, *rhs});
     };
 
     while( begin0 < end0 || begin1 < end1 )
@@ -203,7 +203,7 @@ unsigned get_score(const tiles_t& original, const tiles_t& result) {
             break;
         }
     }
-    return swap_count;
+    return swaps;
 }
 
 islands_t get_islands(const tiles_t& tiles) {

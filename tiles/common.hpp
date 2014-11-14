@@ -28,7 +28,7 @@ typedef std::vector<position_t> positions_t;
 typedef std::tuple<position_t, position_t> swap_t;
 typedef std::vector<swap_t> swaps_t;
 
-void print_swaps(const swaps_t& swaps);
+void print_swaps(const swaps_t& swaps, std::ostream& out = std::cout);
 
 struct island_t {
     island_t() = default;
@@ -82,7 +82,7 @@ void print_tiles_as_input(const tiles_t& tiles);
 
 bool is_done(const tiles_t& tiles);
 
-unsigned get_score(const tiles_t& original, const tiles_t& result);
+swaps_t get_swaps(const tiles_t& original, const tiles_t& result);
 
 islands_t get_islands(const tiles_t& tiles);
 
