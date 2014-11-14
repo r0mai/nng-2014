@@ -81,7 +81,7 @@ void runtests(BloodBank& bank)
 
     double K = 2.;
 
-    if( N <= 100 ) K = 4.;
+    if( N <= 100 ) K = 5.;
 
     IVSet ivset(std::vector< U >( 1 ),
                 std::vector< U >( 1 , N ),
