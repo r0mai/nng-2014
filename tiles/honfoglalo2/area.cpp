@@ -17,8 +17,7 @@ bool Area::vege()
 }
 bool Area::lepes()
 {
-
-    return true;
+    throw "";
 }
 Ertek Area::lop()
 {
@@ -43,4 +42,7 @@ void Area::elvesz( NodePtr p )
     szelen_vagyunk_e = p->szelen_levo_szomszedok( ezt_gyujtjuk );
 }
 
-void csere( Area& , Area& , Area& ){}
+void csere( Area& , Area& , Area& )
+{
+    throw "";
+}

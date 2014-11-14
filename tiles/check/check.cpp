@@ -15,13 +15,15 @@ int main()
     std::cin >> x >> y;
 
     MUL m( x , VUL(y) );
+    MUL n( x , VUL(y) );
     VUL g(3);
-    for( auto& x : m )
+    for( UL i = 0; i < x; ++i )
     {
-        for( auto& y : x)
+        for( UL j = 0; j < y; ++j)
         {
-            std::cin >> y;
-            ++g[y];
+            std::cin >> m[i][j];
+            n[i][j] = m[i][j];
+            ++g[ m[i][j] ];
             //std::cout << y << " ";
         }
         //std::cout << std::endl;
@@ -42,15 +44,28 @@ int main()
         std::swap( m[q][w] , m[e][r] );
     }
 
-    for( auto& x : m )
+    for( UL i = 0; i < x; ++i )
     {
-        for( auto& y : x)
+        for( UL j = 0; j < y; ++j)
         {
-            std::cout << y << " ";
+            
+            std::cout << "\033[7;3" << m[i][j]+1 << "m" << n[i][j] << "\033[0m ";
         }
         std::cout << std::endl;
     }
 
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    for( UL i = 0; i < x; ++i )
+    {
+        for( UL j = 0; j < y; ++j)
+        {
+            
+            std::cout << "\033[7;3" << m[i][j]+1 << "m" << m[i][j] << "\033[0m ";
+        }
+        std::cout << std::endl;
+    }
 
     std::vector<std::vector<std::shared_ptr<UL> > > sets( x , std::vector<std::shared_ptr<UL> >(y) );
 
@@ -100,5 +115,6 @@ int main()
     std::cout << "count : " << count << std::endl;
 
     std::cout << "is ok? :" << std::boolalpha << (count == 3) << std::endl;
+    std::cout << "steps: " << c << std::endl;
     return 0;
 }
