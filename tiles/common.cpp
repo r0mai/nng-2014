@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include <boost/optional.hpp>
+#include <boost/iterator/filter_iterator.hpp>
 
 #include "common.hpp"
 
@@ -119,6 +120,108 @@ bool is_done(const tiles_t& tiles) {
     return get_islands(tiles).size() == 3;
 }
 
+namespace {
+    int index_into_other(
+            const tiles_t& index, const int& indexee, const tiles_t& into)
+    {
+        return into.data()[&indexee - index.data()];
+    }
+}
+
+unsigned get_score(const tiles_t& original, const tiles_t& result) {
+    //Based on Bela's algorithm
+
+    auto pred0 = [](int c) { return c == 0; };
+    auto pred1 = [](int c) { return c == 1; };
+    auto pred2 = [](int c) { return c == 2; };
+
+    auto begin0 = boost::make_filter_iterator(
+            pred0,
+            result.data(),
+            result.data() + result.num_elements());
+    auto begin1 = boost::make_filter_iterator(
+            pred1,
+            result.data(),
+            result.data() + result.num_elements());
+    auto begin2 = boost::make_filter_iterator(
+            pred2,
+            result.data(),
+            result.data() + result.num_elements());
+
+    auto end0 = boost::make_filter_iterator(
+            pred0,
+            result.data() + result.num_elements(),
+            result.data() + result.num_elements());
+    auto end1 = boost::make_filter_iterator(
+            pred1,
+            result.data() + result.num_elements(),
+            result.data() + result.num_elements());
+    auto end2 = boost::make_filter_iterator(
+            pred2,
+            result.data() + result.num_elements(),
+            result.data() + result.num_elements());
+
+
+    auto get_original = [&](const int& index) {
+        return index_into_other(result, index, original);
+    };
+    unsigned swap_count = 0;
+    auto my_swap = [&]() {
+        ++swap_count;
+    };
+
+    while( begin0 != end0 || begin1 != end1 )
+    {
+        while ( begin0 != end0 && get_original(*begin0) == 0) {
+            ++begin0;
+        }
+        while ( begin1 != end1 && get_original(*begin1) == 1) {
+            ++begin1;
+        }
+        while ( begin2 != end2 && get_original(*begin1) == 2) {
+            ++begin2;
+        }
+        if( begin0 < end0 && get_original(*begin0) == 1)
+        {
+            auto it = begin1;
+            while( it < end1 && get_original(*it) != 0 ) ++it;
+            if( it == end1 )
+            {
+                my_swap( begin0 , it );
+            }
+            else
+            {
+                my_swap( begin0, it );
+                ++begin0;
+            }
+        }
+        else if( begin0 < end0 && get_original(*begin0) == 2 )
+        {
+            auto it = begin2;
+            while( it < end2 && get_original(*it) != 0 ) ++it;
+            if( it == end2 )
+            {
+                my_swap( begin0 , it );
+            }
+            else
+            {
+                my_swap( begin0, it );
+                ++begin0;
+            }
+        }
+        else if( begin1 < end1 && begin2 < end2 )
+        {
+            my_swap( begin1 , begin2 );
+            begin1++;
+            begin2++;
+        }
+        else
+        {
+            break;
+        }
+    }
+    return swap_count;
+}
 
 islands_t get_islands(const tiles_t& tiles) {
     unsigned columns = tiles.shape()[0];

@@ -82,6 +82,8 @@ void print_tiles_as_input(const tiles_t& tiles);
 
 bool is_done(const tiles_t& tiles);
 
+unsigned get_score(const tiles_t& original, const tiles_t& result);
+
 islands_t get_islands(const tiles_t& tiles);
 
 positions_t flood_and_paint(const tiles_t& tiles, const position_t& from_where,
