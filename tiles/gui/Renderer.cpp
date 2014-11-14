@@ -12,6 +12,14 @@ sf::Color getColor(int color) {
     }
 }
 
+sf::Color darken(const sf::Color& c) {
+    return sf::Color(
+        std::max(0, c.r - 100),
+        std::max(0, c.g - 100),
+        std::max(0, c.b - 100)
+    );
+}
+
 Renderer::Renderer() :
     tiles_original(read_from()),
     tiles_result(read_from()),
@@ -28,9 +36,38 @@ void Renderer::run() {
 void Renderer::handleEvents() {
     sf::Event event;
     while (window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed) {
-            window.close();
+        switch (event.type) {
+            case sf::Event::Closed:
+                window.close();
+                break;
+            case sf::Event::MouseButtonPressed:
+                handleMouseButtonPressedEvent(event.mouseButton);
+                break;
+            default:
+                break;
         }
+    }
+}
+
+void Renderer::handleMouseButtonPressedEvent(
+        const sf::Event::MouseButtonEvent& ev)
+{
+    unsigned columns = tiles_original.shape()[0];
+    unsigned rows = tiles_original.shape()[1];
+
+    unsigned width = window.getSize().x;
+    unsigned height = window.getSize().y;
+
+    if (ev.x < 0 || ev.x >= int(width) ||
+        ev.y < 0 || ev.y >= int(height)) return;
+
+    unsigned x = ev.x / (width / float(columns));
+    unsigned y = ev.y / (height / float(rows));
+
+    if (marked && *marked == position_t{x, y}) {
+        marked = boost::none;
+    } else {
+        marked = position_t{x, y};
     }
 }
 
@@ -50,6 +87,10 @@ void Renderer::draw() {
             rect.setFillColor(getColor(tiles_original[x][y]));
             rect.setOutlineColor(sf::Color::Black);
             rect.setOutlineThickness(1.f);
+
+            if (marked && *marked == position_t{x, y}) {
+                rect.setFillColor(darken(rect.getFillColor()));
+            }
             window.draw(rect);
         }
     }
