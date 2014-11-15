@@ -103,16 +103,16 @@ void print_tiles(const tiles_t& tiles) {
     }
 }
 
-void print_tiles_as_input(const tiles_t& tiles) {
+void print_tiles_as_input(const tiles_t& tiles, std::ostream& out) {
     unsigned columns = tiles.shape()[0];
     unsigned rows = tiles.shape()[1];
 
-    std::cout << rows << " " << columns << std::endl;
+    out << rows << " " << columns << std::endl;
     for (unsigned y = 0; y < rows; ++y) {
         for (unsigned x = 0; x < columns; ++x) {
-            std::cout << tiles[x][y] << " ";
+            out << tiles[x][y] << " ";
         }
-        std::cout << std::endl;
+        out << std::endl;
     }
 }
 

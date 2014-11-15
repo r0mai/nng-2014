@@ -122,7 +122,8 @@ void Renderer::draw() {
 void Renderer::do_swap(const position_t& lhs, const position_t& rhs) {
     std::swap(tiles_result[lhs.x][lhs.y], tiles_result[rhs.x][rhs.y]);
 
-    bool done = is_done(tiles_result);
+    auto islands = get_islands(tiles_result);
+    bool done = islands.size() == 3;
     swaps_t swaps = get_swaps(tiles_original, tiles_result);
     window.setTitle(get_title(done, swaps.size()));
 
@@ -130,14 +131,18 @@ void Renderer::do_swap(const position_t& lhs, const position_t& rhs) {
         if (!min_score || *min_score > swaps.size()) {
             min_score = swaps.size();
             std::ofstream out("tiles_manual_" + std::to_string(*min_score) + ".out");
+            std::ofstream out_matrix("tiles_manual_" + std::to_string(*min_score) + ".out.matrix");
             print_swaps(swaps, out);
+            print_tiles_as_input(tiles_result, out_matrix);
         }
+    } else {
+        std::cout << "islands.size() = " << islands.size() << std::endl;
     }
 }
 
-std::string Renderer::get_title(bool is_done, unsigned score) {
+std::string Renderer::get_title(bool done, unsigned score) {
     std::stringstream ss;
-    ss << std::boolalpha << "done = " << is_done
+    ss << std::boolalpha << "done = " << done
        << ", score = " << score;
     return ss.str();
 }

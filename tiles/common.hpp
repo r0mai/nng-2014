@@ -78,7 +78,7 @@ graph_t create_graph(const tiles_t& tiles);
 graph_t get_color_graph(graph_t graph, int color);
 
 void print_tiles(const tiles_t& tiles);
-void print_tiles_as_input(const tiles_t& tiles);
+void print_tiles_as_input(const tiles_t& tiles, std::ostream& os = std::cout);
 
 bool is_done(const tiles_t& tiles);
 
