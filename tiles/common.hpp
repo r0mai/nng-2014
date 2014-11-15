@@ -82,7 +82,7 @@ void print_tiles_as_input(const tiles_t& tiles);
 
 bool is_done(const tiles_t& tiles);
 
-swaps_t get_swaps(const tiles_t& original, const tiles_t& result);
+swaps_t get_swaps(tiles_t original, const tiles_t& result);
 
 islands_t get_islands(const tiles_t& tiles);
 

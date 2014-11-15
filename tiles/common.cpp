@@ -129,7 +129,7 @@ namespace {
     }
 }
 
-swaps_t get_swaps(const tiles_t& original, const tiles_t& result) {
+swaps_t get_swaps(tiles_t original, const tiles_t& result) {
     //Based on Bela's algorithm
 
     std::array<std::vector<position_t>, 3> areas;
@@ -152,10 +152,10 @@ swaps_t get_swaps(const tiles_t& original, const tiles_t& result) {
 
     swaps_t swaps;
 
-    auto get_original = [&](position_t p) { return original[p.x][p.y]; };
-    auto my_swap = [&](auto lhs, auto rhs) {
-        std::swap(*lhs, *rhs);
+    auto get_original = [&](position_t p) -> int& { return original[p.x][p.y]; };
+    auto my_swap = [&](auto& lhs, auto& rhs) {
         swaps.push_back(swap_t{*lhs, *rhs});
+        std::swap(get_original(*lhs), get_original(*rhs));
     };
 
     while( begin0 < end0 || begin1 < end1 )
