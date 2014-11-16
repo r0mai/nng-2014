@@ -87,7 +87,7 @@ void Renderer::draw() {
     float width = window.getSize().x;
     float height = window.getSize().y;
 
-    const float outline_width = 3.f;
+    const float outline_width = width/columns * 0.25;
 
     for (unsigned y = 0; y < rows; ++y) {
         for (unsigned x = 0; x < columns; ++x) {
