@@ -1,6 +1,6 @@
 
 include_rules
 
-: foreach *.cpp |> !cxx |>
-: *.o |> !linker |> final
+: foreach *.cpp Client/*.cpp |> !cxx |>
+: *.o Client/*.o |> !linker |> final
 #: foreach tiles*.txt | tiles |> ./tiles cell < %f > %o |> %B.out
