@@ -439,7 +439,6 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
             return c;
         }
     } else {
-        std::cout << "Nem mi jovunk!\n" << std::endl;
         //Nem mi jovunk :(
         return "";
     }
