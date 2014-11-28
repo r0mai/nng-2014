@@ -123,7 +123,7 @@ std::string commandToString(Command c) {
 	else return "check";
 }
 
-std::tuple<int, int> doLepkepzes(
+std::tuple<int, int> doPostFlopLepkepzes(
 	int hand1, int hand2,
 	int flop1, int flop2, int flop3)
 {
@@ -165,6 +165,36 @@ std::tuple<int, int> doLepkepzes(
     }
 
 
+}
+
+int doPreFlopLepkepzes(int hand1, int hand2) {
+    std::array<int, 2> hand = {{hand1, hand2}};
+    std::sort(hand.begin(), hand.end());
+    if (hand[0] == 8 && hand[1] == 9) {
+	return 0;
+    }
+
+    if (hand[0] == 9 && hand[1] == 9) {
+	return 1;
+    }
+
+    if (hand[0] == 8 && hand[1] == 8) {
+	return 2;
+    }
+
+    if (hand[0] == 7 && hand[1] == 7) {
+	return 2;
+    }
+
+    if (hand[0] == hand[1] && hand[0] <= 6 && hand[0] >= 4) {
+	return 3;
+    }
+
+    if (hand[0] >= 7 && hand[1] >= 7) {
+	return 4;
+    }
+
+    return 5;
 }
 
 std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
