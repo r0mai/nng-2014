@@ -108,6 +108,50 @@ std::string commandToString(Command c) {
 	else return "check";
 }
 
+std::tuple<int, int> doLepkepzes(
+	int hand1, int hand2,
+	int flop1, int flop2, int flop3)
+{
+    std::array<int, 2> hand = {{hand1, hand2}};
+    std::array<int, 3> flop = {{flop1, flop2, flop3}};
+    std::sort(hand.begin(), hand.end());
+    std::sort(flop.begin(), flop.end());
+
+    bool drillFlop = flop[0] == flop[1] && flop[0] == flop[2];
+    bool pairHand = hand[0] == hand[1];
+
+    bool pairFlop = flop[0] == flop[1] || flop[1] == flop[2];
+
+    if (drillFlop && pairHand) {
+	if (flop[0] == hand[0]) {
+	    // XXX XX
+	    return std::make_tuple(0, 0);
+	} else {
+	    // XXX YY
+	    return std::make_tuple(0, 0);
+	}
+    }
+
+    if (drillFlop) {
+	if (flop[0] == hand[0]) {
+	    // XXX XY
+	    return std::make_tuple(0, 0);
+	} else if (flop[0] == hand[1]) {
+	    // XXX YX
+	    return std::make_tuple(0, 0);
+	} else {
+	    // XXX YZ
+	    if (hand[0] == 9 || hand[1] == 9) {
+		return std::make_tuple(0, 0);
+	    } else {
+		return std::make_tuple(0, 1);
+	    }
+	}
+    }
+
+
+}
+
 std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
 {
 
@@ -177,7 +221,9 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
 
 
 	int next = -1;
+	std::cout << "response : ";
 	for (unsigned i = c; i < response.size() - 1; ++i) {
+		std::cout << i;
 		if (starts_with(response[i], "action")) {
 
 		} else if (starts_with(response[i], "fold")) {
@@ -193,6 +239,7 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
 			warassert(false && "unknown command");
 		}
 	}
+	std::cout << std::endl;
 	if (next == our_id) {
 		//Mi jovunk!!!
 		std::cout << "Mi jovunk! cash = " << our_cash << std::endl;
