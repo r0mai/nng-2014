@@ -200,6 +200,19 @@ int doPreFlopLepkepzes(int hand1, int hand2) {
     return 5;
 }
 
+void printRanking(Players players) {
+    std::sort(players.begin(), players.end(),
+            [](const Player& lhs, const Player& rhs) {
+                return lhs.cash > rhs.cash;
+            });
+
+    for (unsigned i = 0; i < players.size(); ++i) {
+        std::cout << i+1 << ".\t" <<
+            players[i].cash << " : " <<
+            players[i].name << std::endl;
+    }
+}
+
 std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
 {
 
@@ -245,6 +258,7 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
             players[i].name += name + " ";
         }
     }
+    printRanking(players);
 
     int pot, blind;
 
