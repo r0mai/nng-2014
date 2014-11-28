@@ -15,3 +15,5 @@ To build everything:
 ```
 tup
 ```
+
+The repo was made public after the finals..
