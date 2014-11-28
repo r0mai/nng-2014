@@ -417,17 +417,23 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
         //Mi jovunk!!!
         std::cout << "Mi jovunk! cash = " << our_cash << std::endl;
         if (cards.size() == 0) {
-            return commandToString(
+            auto c = commandToString(
 		    getPreflopCommand(hand1, hand2, betCount));
+            std::cout << "Sent before flop: " << c << " " << hand1 <<
+                " " << hand2 << std::endl;
+            return c;
         } else {
-            return commandToString(
+            auto c = commandToString(
                     getPostflopCommand(
                         doPostFlopLepkepzes(
                             hand1, hand2, cards[0], cards[1], cards[2]),
                     betCount));
+            std::cout << "Sent after flop: " << c << " " << hand1 <<
+                " " << hand2 << std::endl;
+            return c;
         }
     } else {
-        std::cout << "Nem mi jovunk!" << std::endl;
+        std::cout << "Nem mi jovunk!\n" << std::endl;
         //Nem mi jovunk :(
         return "";
     }
