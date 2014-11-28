@@ -319,6 +319,8 @@ void printRanking(Players players) {
 std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
 {
 
+    static std::ofstream currentHandFile("currentHand.txt");
+
     using boost::starts_with;
 
     if (response.size() == 0) {
@@ -345,6 +347,8 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
 
     parseWithStream(response[c++], tmp, hand1, hand2);
     warassert(tmp == "hand");
+
+    currentHandFile << hand1 << " " << hand2 << std::endl;
 
     parseWithStream(response[c++], tmp, player_count);
     warassert(tmp == "players");
@@ -403,6 +407,12 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
             warassert(tmp == "next");
         } else if (starts_with(response[i], "winner")) {
             printRanking(players);
+            if (starts_with(response[i], "winner 4")) {
+                currentHandFile << "WE WON! " << response[i] << std::endl;
+            } else {
+                currentHandFile << "WE didn't win :( " <<
+                    response[i] << std::endl;
+            }
         } else if (starts_with(response[i], "showdown")) {
 
         } else {
