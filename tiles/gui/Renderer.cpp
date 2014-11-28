@@ -4,6 +4,7 @@
 #include <cassert>
 #include <sstream>
 #include <algorithm>
+#include <fstream>
 
 sf::Color getColor(int color) {
     switch (color) {
@@ -25,7 +26,9 @@ sf::Color darken(const sf::Color& c) {
 Renderer::Renderer() :
     tiles_original(read_from()),
     tiles_result(read_from()),
-    window(sf::VideoMode(768, 768), get_title()) {}
+    window(sf::VideoMode(768, 768),
+            get_title(is_done(tiles_result),
+                get_swaps(tiles_original, tiles_result).size())) {}
 
 
 void Renderer::run() {
@@ -84,7 +87,7 @@ void Renderer::draw() {
     float width = window.getSize().x;
     float height = window.getSize().y;
 
-    const float outline_width = 3.f;
+    const float outline_width = width/columns * 0.25;
 
     for (unsigned y = 0; y < rows; ++y) {
         for (unsigned x = 0; x < columns; ++x) {
@@ -118,11 +121,28 @@ void Renderer::draw() {
 
 void Renderer::do_swap(const position_t& lhs, const position_t& rhs) {
     std::swap(tiles_result[lhs.x][lhs.y], tiles_result[rhs.x][rhs.y]);
-    window.setTitle(get_title());
+
+    auto islands = get_islands(tiles_result);
+    bool done = islands.size() == 3;
+    swaps_t swaps = get_swaps(tiles_original, tiles_result);
+    window.setTitle(get_title(done, swaps.size()));
+
+    if (done) {
+        if (!min_score || *min_score > swaps.size()) {
+            min_score = swaps.size();
+            std::ofstream out("tiles_manual_" + std::to_string(*min_score) + ".out");
+            std::ofstream out_matrix("tiles_manual_" + std::to_string(*min_score) + ".out.matrix");
+            print_swaps(swaps, out);
+            print_tiles_as_input(tiles_result, out_matrix);
+        }
+    } else {
+        std::cout << "islands.size() = " << islands.size() << std::endl;
+    }
 }
 
-std::string Renderer::get_title() {
+std::string Renderer::get_title(bool done, unsigned score) {
     std::stringstream ss;
-    ss << std::boolalpha << "done = " << is_done(tiles_result);
+    ss << std::boolalpha << "done = " << done
+       << ", score = " << score;
     return ss.str();
 }

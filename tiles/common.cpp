@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include <boost/optional.hpp>
+#include <boost/iterator/filter_iterator.hpp>
 
 #include "common.hpp"
 
@@ -28,10 +29,11 @@ tiles_t read_from(std::istream& in) {
     return tiles;
 }
 
-void print_swaps(const swaps_t& swaps) {
-    std::cout << swaps.size() << "\n";
-    for (auto x : swaps) {
-        std::cout << get<0>(x).y << " " << get<0>(x).x << " " << get<1>(x).y << " " << get<1>(x).x << "\n";
+void print_swaps(const swaps_t& swaps, std::ostream& out) {
+    out << swaps.size() << "\n";
+    for (auto p : swaps) {
+        out << get<0>(p).y << " " << get<0>(p).x << " "
+            << get<1>(p).y << " " << get<1>(p).x << "\n";
     }
 }
 
@@ -101,16 +103,16 @@ void print_tiles(const tiles_t& tiles) {
     }
 }
 
-void print_tiles_as_input(const tiles_t& tiles) {
+void print_tiles_as_input(const tiles_t& tiles, std::ostream& out) {
     unsigned columns = tiles.shape()[0];
     unsigned rows = tiles.shape()[1];
 
-    std::cout << rows << " " << columns << std::endl;
+    out << rows << " " << columns << std::endl;
     for (unsigned y = 0; y < rows; ++y) {
         for (unsigned x = 0; x < columns; ++x) {
-            std::cout << tiles[x][y] << " ";
+            out << tiles[x][y] << " ";
         }
-        std::cout << std::endl;
+        out << std::endl;
     }
 }
 
@@ -119,6 +121,91 @@ bool is_done(const tiles_t& tiles) {
     return get_islands(tiles).size() == 3;
 }
 
+namespace {
+    int index_into_other(
+            const tiles_t& index, const int& indexee, const tiles_t& into)
+    {
+        return into.data()[&indexee - index.data()];
+    }
+}
+
+swaps_t get_swaps(tiles_t original, const tiles_t& result) {
+    //Based on Bela's algorithm
+
+    std::array<std::vector<position_t>, 3> areas;
+
+    unsigned columns = original.shape()[0];
+    unsigned rows = original.shape()[1];
+
+    for (unsigned y = 0; y < rows; ++y) {
+        for (unsigned x = 0; x < columns; ++x) {
+            areas[result[x][y]].push_back({x, y});
+        }
+    }
+
+    auto begin0 = areas[0].begin();
+    auto begin1 = areas[1].begin();
+    auto begin2 = areas[2].begin();
+    auto end0 = areas[0].end();
+    auto end1 = areas[1].end();
+    auto end2 = areas[2].end();
+
+    swaps_t swaps;
+
+    auto get_original = [&](position_t p) -> int& { return original[p.x][p.y]; };
+    auto my_swap = [&](auto& lhs, auto& rhs) {
+        swaps.push_back(swap_t{*lhs, *rhs});
+        std::swap(get_original(*lhs), get_original(*rhs));
+    };
+
+    while( begin0 < end0 || begin1 < end1 )
+    {
+        while ( begin0 < end0 && get_original(*begin0) == 0 ) ++begin0;
+        while ( begin1 < end1 && get_original(*begin1) == 1 ) ++begin1;
+        while ( begin2 < end2 && get_original(*begin2) == 2 ) ++begin2;
+        if( begin0 < end0 && get_original(*begin0) == 1 )
+        {
+            auto it = begin1;
+            while( it < end1 && get_original(*it) != 0 ) ++it;
+            if( it == end1 )
+            {
+                my_swap( begin0 , it = begin1 );
+            }
+            else
+            {
+                my_swap( begin0, it );
+                ++begin0;
+            }
+            if( it == begin1 ) ++begin1;
+        }
+        else if( begin0 < end0 && get_original(*begin0) == 2 )
+        {
+            auto it = begin2;
+            while( it < end2 && get_original(*it) != 0 ) ++it;
+            if( it == end2 )
+            {
+                my_swap( begin0 , it = begin2 );
+            }
+            else
+            {
+                my_swap( begin0, it );
+                ++begin0;
+            }
+            if( it == begin2 ) ++begin2;
+        }
+        else if( begin1 < end1 && begin2 < end2 )
+        {
+            my_swap( begin1 , begin2 );
+            begin1++;
+            begin2++;
+        }
+        else
+        {
+            break;
+        }
+    }
+    return swaps;
+}
 
 islands_t get_islands(const tiles_t& tiles) {
     unsigned columns = tiles.shape()[0];

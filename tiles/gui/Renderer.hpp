@@ -20,7 +20,7 @@ struct Renderer {
     void draw();
 
     void do_swap(const position_t& lhs, const position_t& rhs);
-    std::string get_title();
+    std::string get_title(bool is_done, unsigned score);
 
     tiles_t tiles_original;
     tiles_t tiles_result;
@@ -28,6 +28,8 @@ struct Renderer {
     boost::optional<position_t> marked;
 
     sf::RenderWindow window;
+
+    boost::optional<unsigned> min_score;
 };
 
 #endif

@@ -12,4 +12,4 @@ CPPFLAGS += -Wall -Wextra
 LDFLAGS =
 
 !cxx = |> ^ CXX %f^ $(CXX) $(CPPFLAGS) -c %f -o %o |> %B.o
-!linker = |> ^ LD %o^ $(LD) $(LDFLAGS) %f -o %o |>
+!linker = |> ^ LD %o^ $(LD) %f -o %o $(LDFLAGS) |>

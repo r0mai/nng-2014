@@ -46,6 +46,7 @@ int main()
     {
         for( Termeszetes j = 0; j < y ; ++j )
         {
+            nodeMat[i][j].szomszed_rendez();
             if( nodeMat[i][j].csoport == NULL )
             {
                 groups.push_back( Group( nodeMat[i][j].ertek , groups.size() ) );
@@ -68,6 +69,7 @@ int main()
             }
         }
     }
+
     areas.push_back( Area( beginNs[0] , db[0] ) );
     areas.push_back( Area( beginNs[1] , db[1] ) );
     areas.push_back( Area( beginNs[2] , db[2] ) );
@@ -80,8 +82,13 @@ int main()
     {
         if( !areas[i].lepes() )
         {
-            Ertek kitol = areas[i].lop();
-            areas[kitol].lepes();
+            NodePtr mit = areas[i].lop();
+            if( mit->foglalt != invalid )
+            {
+                areas[mit->foglalt].elvesz( mit );
+                areas[mit->foglalt].lepes();
+
+            }
         }
     };
     kiir( nodeMat );
