@@ -408,10 +408,11 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
         } else if (starts_with(response[i], "winner")) {
             printRanking(players);
             if (starts_with(response[i], "winner 4")) {
-                currentHandFile << "WE WON! " << response[i] << std::endl;
+                currentHandFile << "WE WON! " <<
+                    response[i] << " pot = " << pot << std::endl;
             } else {
                 currentHandFile << "WE didn't win :( " <<
-                    response[i] << std::endl;
+                    response[i] << " pot = " << pot << std::endl;
             }
         } else if (starts_with(response[i], "showdown")) {
 
