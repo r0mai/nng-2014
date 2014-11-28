@@ -68,7 +68,7 @@ static const std::map<Combination, matrix> POST_LOOKUP = {
         }
     },
     {Null,
-        {{{CHECK, CHECK, CHECK, CHECK}}}
+        {{{CHECK, CHECK, CHECK, CHECK, CHECK}}}
     }
 };
 
