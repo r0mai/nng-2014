@@ -21,6 +21,19 @@ const char *CommandList[]={ "check", "call", "bet" };
 enum Combination {AllTheSame, Full, Poker, Drill, DoublePair, Pair, Null};
 enum Command { CHECK, CALL, BET };
 
+std::ostream& operator<<(std::ostream& os, Combination c) {
+    switch (c) {
+        case AllTheSame: os << "AllTheSame"; break;
+        case Full: os << "Full"; break;
+        case Poker: os << "Poker"; break;
+        case Drill: os << "Drill"; break;
+        case DoublePair: os << "DoublePair"; break;
+        case Pair: os << "Pair"; break;
+        case Null: os << "Null"; break;
+    }
+    return os;
+}
+
 typedef std::vector<Command> command_vector;
 typedef std::vector<std::vector<command_vector> > matrix;
 
@@ -430,13 +443,12 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
                 " " << hand2 << " betCount = " << betCount << std::endl;
             return c;
         } else {
-            auto c = commandToString(
-                    getPostflopCommand(
-                        doPostFlopLepkepzes(
-                            hand1, hand2, cards[0], cards[1], cards[2]),
-                    betCount));
+            auto proj = doPostFlopLepkepzes(
+                            hand1, hand2, cards[0], cards[1], cards[2]);
+            auto c = commandToString(getPostflopCommand(proj, betCount));
             std::cout << "Sent after flop: " << c << " " << hand1 <<
-                " " << hand2 << " betCount = " << betCount <<  std::endl;
+                " " << hand2 << " betCount = " << betCount << " : " <<
+                std::get<0>(proj) << std::endl;
             return c;
         }
     } else {
