@@ -48,7 +48,7 @@ static const std::vector<command_vector> PRE_LOOKUP = {
 };
 
 static const std::map<Combination, matrix> POST_LOOKUP = {
-    {AllTheSame, 
+    {AllTheSame,
         {{{BET, BET, BET, BET, CALL}}}
     },
     {Full,
@@ -56,10 +56,10 @@ static const std::map<Combination, matrix> POST_LOOKUP = {
             {{BET, BET, CALL, CALL, CALL}},
             {{BET, BET, BET, CALL, CALL}, {BET, BET, CALL, CALL, CALL}},
             {{BET, BET, BET, CALL, CALL}, {BET, BET, BET, BET, CALL}}
-        } 
+        }
     },
     {Poker,
-        {{{BET, BET, BET, CALL, CALL}, {BET, BET, BET, BET, CALL}}} 
+        {{{BET, BET, BET, CALL, CALL}, {BET, BET, BET, BET, CALL}}}
     },
     {Drill,
         {
@@ -136,7 +136,16 @@ Command getPreflopCommand(int hand1, int hand2, int betCount) {
 
 Command getPostflopCommand(std::tuple<Combination, int, int> t, int betCount) {
     auto map = POST_LOOKUP;
-    return map[std::get<0>(t)][std::get<1>(t)][std::get<2>(t)][betCount];
+    try {
+        return
+            map.at(std::get<0>(t)).
+            at(std::get<1>(t)).at(std::get<2>(t)).at(betCount);
+    } catch (...) {
+        std::stringstream ss;
+        ss << std::get<0>(t) << " " << std::get<1>(t) << " " << std::get<2>(t);
+        std::cerr << "!!!!!!!!!!!!--!!!! out of index " + ss.str() << std::endl;
+    }
+    return CALL;
 }
 
 std::string commandToString(Command c) {
@@ -188,17 +197,17 @@ std::tuple<Combination, int, int> doPostFlopLepkepzes(
         if(pairHand)
         {
             if(flop[1] == hand[0])
-            { 
+            {
                 // XXY XX
                 return std::make_tuple(Poker, 1, 0);
             }
-            
+
             if(flop[0] == hand[0] || flop[2] == hand[0] )
             {
                 // XXY YY
                 return std::make_tuple(Full, 2, flop[1] < hand[0]);
             }
-            
+
             // XXZ YY
             return std::make_tuple(DoublePair, 0, hand[0] > flop[2]);
         }
@@ -231,10 +240,10 @@ std::tuple<Combination, int, int> doPostFlopLepkepzes(
     }
 
     if(pairHand)
-    {   
+    {
         // XYZ XX
         if(flop[0] == hand[0])
-        {            
+        {
             return std::make_tuple(Drill, 2, 2);
         }
         if(flop[1] == hand[0])
@@ -251,7 +260,7 @@ std::tuple<Combination, int, int> doPostFlopLepkepzes(
             return std::make_tuple(Pair, 2, 0);
         }
         return std::make_tuple(Pair, 2, 1);
-        
+
     }
     std::set<int> elems(flop.begin(), flop.end());
     elems.insert(hand.begin(), hand.end());
@@ -259,13 +268,13 @@ std::tuple<Combination, int, int> doPostFlopLepkepzes(
     if(elems.size() == 3 )
     {
         // ZXY XY
-        if(flop[1] == hand[0])  
+        if(flop[1] == hand[0])
         {
-            return std::make_tuple(DoublePair, 1, 0);  
+            return std::make_tuple(DoublePair, 1, 0);
         }
         if(flop[1] == hand[1])
         {
-            return std::make_tuple(DoublePair, 1, 2);  
+            return std::make_tuple(DoublePair, 1, 2);
 
         }
         return std::make_tuple(DoublePair, 1, 1);
