@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Client.h"
 #include <map>
+#include <set>
 
 #include <sstream>
 #include <boost/algorithm/string.hpp>
@@ -126,7 +127,7 @@ std::string commandToString(Command c) {
     else return "check";
 }
 
-std::tuple<int, int> doPostFlopLepkepzes(
+std::tuple<Combination, int, int> doPostFlopLepkepzes(
     int hand1, int hand2,
     int flop1, int flop2, int flop3)
 {
@@ -141,33 +142,126 @@ std::tuple<int, int> doPostFlopLepkepzes(
     bool pairFlop = flop[0] == flop[1] || flop[1] == flop[2];
 
     if (drillFlop && pairHand) {
-    if (flop[0] == hand[0]) {
-        // XXX XX
-        return std::make_tuple(0, 0);
-    } else {
-        // XXX YY
-        return std::make_tuple(0, 0);
-    }
+        if (flop[0] == hand[0]) {
+            // XXX XX
+            return std::make_tuple(AllTheSame, 0, 0);
+        } else {
+            // XXX YY
+            return std::make_tuple(Full, 0, 0);
+        }
     }
 
     if (drillFlop) {
-    if (flop[0] == hand[0]) {
-        // XXX XY
-        return std::make_tuple(0, 0);
-    } else if (flop[0] == hand[1]) {
-        // XXX YX
-        return std::make_tuple(0, 0);
-    } else {
-        // XXX YZ
-        if (hand[0] == 9 || hand[1] == 9) {
-        return std::make_tuple(0, 0);
+        if (flop[0] == hand[0] || flop[0] == hand[1] ) {
+            // XXX XY
+            return std::make_tuple(Poker, 0, 0);
         } else {
-        return std::make_tuple(0, 1);
+            // XXX YZ
+            if (hand[0] == 9 || hand[1] == 9) {
+                return std::make_tuple(Drill, 0, 0);
+            } else {
+                return std::make_tuple(Drill, 0, 1);
+            }
         }
     }
+    if(pairFlop)
+    {
+        if(pairHand)
+        {
+            if(flop[1] == hand[0])
+            { 
+                // XXY XX
+                return std::make_tuple(Poker, 1, 0);
+            }
+            
+            if(flop[0] == hand[0] || flop[2] == hand[0] )
+            {
+                // XXY YY
+                return std::make_tuple(Full, 2, flop[1] < hand[0]);
+            }
+            
+            // XXZ YY
+            return std::make_tuple(DoublePair, 0, hand[0] > flop[2]);
+        }
+        // no pair hand
+        if(flop[0] == hand[0] && flop[2] == hand[1])
+        {
+            // XXY XY
+            return std::make_tuple(Full, 1, flop[0] == flop[1]);
+        }
+
+        if(flop[1] == hand[0] || flop[1] == hand[1])
+        {
+            // XXY XZ
+            return std::make_tuple(Drill, 1, flop[0] != flop[1]);
+        }
+
+        if(flop[0] == flop[1] && (flop[2] == hand[0] || flop[2] == hand[1]) )
+        {
+            // XXY YZ
+            return std::make_tuple(DoublePair, 2, 0);
+        }
+
+        if(flop[2] == flop[1] && (flop[0] == hand[0] || flop[0] == hand[1]) )
+        {
+            // YXX YZ
+            return std::make_tuple(DoublePair, 2, 1);
+        }
+        // XXY ZW
+        return std::make_tuple(Pair, 0, 0);
     }
 
-    return std::make_tuple(-1, -1);
+    if(pairHand)
+    {   
+        // XYZ XX
+        if(flop[0] == hand[0])
+        {            
+            return std::make_tuple(Drill, 2, 2);
+        }
+        if(flop[1] == hand[0])
+        {
+            return std::make_tuple(Drill, 2, 1);
+        }
+        if(flop[2] == hand[0])
+        {
+            return std::make_tuple(Drill, 2, 0);
+        }
+        // XYZ WW
+        if(flop[2] < hand[0])
+        {
+            return std::make_tuple(Pair, 2, 0);
+        }
+        return std::make_tuple(Pair, 2, 1);
+        
+    }
+    std::set<int> elems(flop.begin(), flop.end());
+    elems.insert(hand.begin(), hand.end());
+
+    if(elems.size() == 3 )
+    {
+        // ZXY XY
+        if(flop[1] == hand[0])  
+        {
+            return std::make_tuple(DoublePair, 1, 0);  
+        }
+        if(flop[1] == hand[1])
+        {
+            return std::make_tuple(DoublePair, 1, 2);  
+
+        }
+        return std::make_tuple(DoublePair, 1, 1);
+    }
+    else if( elems.size() == 4)
+    {
+        // XYZ XW
+        if(flop[2] == hand[0] || flop[2] == hand[1])
+        {
+            return std::make_tuple(Pair, 1, 0);
+        }
+        return std::make_tuple(Pair, 1, 1);
+    }
+    // XYZ VW
+    return std::make_tuple(Null, 0, 0);
 }
 
 int doPreFlopLepkepzes(int hand1, int hand2) {
