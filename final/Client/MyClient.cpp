@@ -17,23 +17,24 @@
 const char *CommandList[]={ "check", "call", "bet" };
 
 enum Combination {AllTheSame, Full, Poker, Drill, DoublePair, Pair, Null};
+enum Command { CHECK, CALL, BET };
 
-typedef std::vector<std::string> string_vector;
-typedef std::vector<std::vector<string_vector> > matrix;
+typedef std::vector<Command> command_vector;
+typedef std::vector<std::vector<command_vector> > matrix;
 
 static const std::map<Combination, matrix> LOOKUP = {
     {AllTheSame, 
-        {{{"bet", "bet", "bet", "bet" }}}
+        {{{BET, BET, BET, BET }}}
     },
     {Full,
         {
-            {{"bet", "bet", "call", "call"}},
-            {{"bet", "bet", "bet", "call"}, {"bet", "bet", "call", "call"}},
-            {{"bet", "bet", "bet", "call"}, {"bet", "bet", "bet", "bet"}}
+            {{BET, BET, CALL, CALL}},
+            {{BET, BET, BET, CALL}, {BET, BET, CALL, CALL}},
+            {{BET, BET, BET, CALL}, {BET, BET, BET, BET}}
         } 
     },
     {Poker,
-        {{{"bet", "bet", "bet", "call"}, {"bet", "bet", "bet", "bet"}}} 
+        {{{BET, BET, BET, CALL}, {BET, BET, BET, BET}}} 
     },
     {Drill,
         {
@@ -51,11 +52,10 @@ static const std::map<Combination, matrix> LOOKUP = {
         }
     },
     {Null,
-        {{{"check", "check", "check", "check"}}} 
+        {{{CHECK, CHECK, CHECK, BET}}} 
     }
 };
 
-enum Command { CHECK, CALL, BET };
 
 class MYCLIENT : public CLIENT
 {
