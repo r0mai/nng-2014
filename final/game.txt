@@ -1,0 +1,77 @@
+﻿Limit holdem póker-szerűség:
+
+1-9-ig vannak a lapok, szinek nélkül, és nem paklibol húzva. Sima véletlen számok, tehát nem csökken 1-1 szám esélye,
+ha már van belőle osztva.
+
+Egy leosztás 2 licitkörből áll:
+pre-flop: mindenki kap 2 lapot (hand), és befizeti egy kis pénzt, az ante-t, ami amúgy blind/10. A rendes pókerrel ellentétben a blind-oknak nem kell plusz pénzt beadni.
+flop: generálunk 3 közös lapot (cards), ezeket mindenki hozzászámolja a saját lapjához.
+
+Egy licitkör során összesen 4-szer lehet emelni. Az emelés mértéke pre-flop során egy meghatározott összeg (blind), flop során ennek kétszerese.
+
+Csak az egyforma lapokra kell figyelni, nincs szín, nincs sor. Minden lap számít, csak 5 van összesen.
+Sorban: Pár, 2 pár, 3 egyforma, 3+2 egyforma (full), 4 egyforma, 5 egyforma.
+Ha ugyanannyi egyforma lapja van 2 játékosnak, például 2 pár, akkor azok közül a 2 erősebb pár nagysága számít.
+Ha ezek is egyformák, akkor a másik pár, és ha azok is egyformák, akkor a maradék lapok.
+[9,9,5,5,2] erősebb, mint [8,8,7,7,6] a 9>8 miatt, vagy a [9,9,5,5,1] a 2>1 miatt.
+[2,2,2,1,1] erősebb, mint [1,1,1,9,9] a 2>1 miatt, vagy a [9,9,8,8,7] a 3+2 egyforma>2+2 egyforma miatt.
+Egyébként mivel az 5 lapból 3 közös, játék során igazából csak 2 lapban különbözhetnek.
+
+A szervertől komplett csomagban érkezik a játék állapota, erre kell választ generálni, ami 4 féle lehet:
+- üres string: ha nem te vagy épp soron
+- bet: emelés
+- check: ha nem kell pénzt beadni akkor tartom (check), különben bedobom (fold)
+- call: megadás, tehát beadom a hiányzó pénzt, de nem emelem tovább a tétet
+
+Annak aki még sose pókerezett, vagy nem Texas hold'em-et, itt egy példa.
+A, B, és C a játékosok, a blind $5.
+- osztás után mindenki bead $1-t, így a kezdő "pot" $3, a "bet" pedig $0-ról indul.
+- A bet, vagyis emel: pot->$8, bet->$5.
+- B bet, pot->$18, bet->$10 azaz egyrészt megadja a bet-et és további $5-ral emeli a tétet.
+- C call, tartja: pot->$28, bet marad. $10-t kellett fizetnie.
+- A call: pot->$33, bet marad. $5-t már fizetett, de B tovább emelte $5-tel, ezt neki is meg kell adnia, ha folytatni szeretné.
+Itt vége ennek a licitkörnek, mert B emelt utoljára, utána a többiek csak tartották, ezért B nem emelhet már újra.
+Következik a flop, 3 közös lap a B játékosnak nem kedvez. Ő emelt utoljára, ő kezdi ezt a licit kört:
+- B check, pot maradt $33, bet $0, ez nullázódik a licitkör elején.
+- C bet, pot $43, bet $10
+- A bet, pot $63, bet $20
+- B check-et mond, ami itt most fold-ot jelent, vagyis bedobta. $20-at kellett volna fizetni a 'call'-hoz.
+- C bet, pot $83, bet $30. $10-t már adott a licitbe, kifizeti A emelését, plusz emel $10-tel, ez összesen $20.
+- A bet, pot $103, bet $40. Ez volt a 4. bet, többet nem lehet emelni ebben a licitkörben.
+- C call, pot $113, és vége a licitkörnek és a leosztásnak.
+Összehasonlítják a lapjaikat (showdown). A-nak béna lapja volt, és C nyert.
+
+Alternatív befejezés:
+- A check, ami ilyenkor fold. Nem maradt más játékban, A nyert.
+
+Egy leosztásban minden játékosnak különböző saját lapjai vannak, ezért a nyertes mindig egyértelmű (nincs split pot).
+Bár a $50,000 kezdőpénz elég sok, ha mégis elfogyna, licit alatt a pénzed mehet negatívba is. Tehát mindig lehet emelni (ezért aztán side pot sincs).
+Ha viszont nem nyersz, és ezért negatívba maradt a pénzed, új leosztásban már nem vehetsz részt.
+A játékosok azonosítója nem változik újracsatlakozáskor sem.
+Azt nem lehet tudni, hogy egy játékos csatlakozva van-e a szerverhez, vagy hogy mikor frissítette a kliensét.
+Amelyik játékos nincs csatlakozva, vagy nem válaszol időben, mindig "check"-et választ. A szerver az állapot kiküldése után fix ideig vár, ami preflop 1/4 másodperc, utána 1 másodperc, és csak utána dolgozza fel a választ.
+Ez akkor is igaz, ha korábban megérkezik a válasz, és akkor is, ha nincs is csatlakozva a soron lévő játékos kliense.
+
+A parancsokat be lehet küldeni előre is, ha több is érkezik, a szerver csak az utolsót veszi figyelembe.
+Ha nem lehet többet emelni, a szerver a bet parancsot call-ként értelmezi.
+A preflop első emelés speciális:
+- ezt lehet "call"-ként is küldeni, ugyanaz, mint a bet
+- a "check" bedobja
+
+Kaptok egy példaklienst, ami csatlakozik, és a MyClient.cpp-ben lévő HandleServerResponse-ban átadja a sorokba fejtett szerver csomagok a játékállapotról.
+Ennek visszatérési értéke az, amit a szervernek válaszol ("", "bet", "call", vagy "check").
+A GetPassword-öt csapatra szabottan kitöltve kapjátok, ez egyedi, ezért login név nem kell.
+A példa kliens lefordul linux es windows alatt is, ha lehet, ne írjátok teljesen újra. Alapból debug.log-ot gyárt, ebből ha egy állapotot kimásoltok test.txt néven, indításkor leszimulálja és kiírja az eredményt.
+Van test_0.txt és tets_1.txt is amik a protokol.txt-ben leírt példák, ezzel is tesztelhetitek, amíg nem indult el a szerver.
+
+A szerver az első óra kivételével az egész verseny alatt fut, érdemes minél előbb működő klienssel csatlakozni, mert az 'ante'-kat akkor is befizeted, ha még nem csatlakoztál.
+Az utolsó 1 órában már nem lehet módosítani a kliensen, ezt közösen fogjuk végigizgulni az Aud Max-ban.
+Közben lehetőségetek lesz mesélni az algoritmusotokról, vagy arról, amit még szívesen beleraktatok volna, ha lett volna még egy kis idő.
+
+A blind-ok bizonyos időközönként növekednek, ezért a kezdeti veszteségeket később könnyebb visszanyerni.
+Az aktuális blind az állapot része, amúgy 10-ről indul, nagyjából 1 óra futás felemelkedik 20-ra, aztán megint kb 1 óra után 30-ra, aztán 40-re, végül a közös végjáték 1 órája alatt 100 lesz.
+Valaki biztos meg fogja kérdezni, hogy szabad-e közvetlenül kézzel irányítani a klienst: nem szabad, az utolsó 1 órában pedig nem is lehet, mert külön asztalon lesznek a gépeitek.
+
+Verseny közben ha kérdésetek van, telefonon is hívhattok minket:
+(20) 595 2002 Fable
+(20) 952 9845 Mérvadó Béla

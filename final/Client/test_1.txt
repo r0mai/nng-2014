@@ -1,0 +1,23 @@
+tick 337 20
+id 4
+cash 49870
+hand 7 4
+players 10
+4 49870 Nutellas Gereblye
+9 49980 ELTE Sparrows
+2 49860 constexprts
+8 49310 VoidStar
+5 50220 RoomOneOOne
+3 49980 giliszta
+10 50550 csolution
+1 49860 Input Underflow
+7 50470 Nodus
+6 49830 Mighty Ganstaz
+pot 70
+blind 10
+to_call 20
+cards 0
+action 5 fold
+fold 5 7 1
+next 3
+.

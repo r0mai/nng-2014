@@ -1,0 +1,91 @@
+pelda, 4-es (Nutellas Gereblye) szemszogebol nezve. Epp veget ert egy leosztas, amiben te mar korabban fold-oltal:
+
+tick 311 18
+id 4
+cash 49932
+hand 8 4
+players 10
+1 49862 Input Underflow
+4 49932 Nutellas Gereblye
+2 49932 constexprts
+8 49412 VoidStar
+6 49832 Mighty Ganstaz
+9 49982 ELTE Sparrows
+10 50362 csolution
+7 50482 Nodus
+5 50222 RoomOneOOne
+3 49982 giliszta
+pot 490
+blind 10
+cards 3
+4
+3
+6
+action 2 call
+showdown 1 9 6
+showdown 2 8 8
+showdown 8 6 5
+winner 10 6 3
+.
+
+magyarazattal:
+tick 311 18 ; allapot es jatek azonosito, az elso egyesevel no, a masik csak uj leosztasnal
+id 4 ; sajat id
+cash 49932 ; penzed
+hand 8 4 ; kezedben levo lapok
+players 10 ; ennyien ulnek veled egyutt az asztalnal, utana ennyi sor jon
+1 49862 Input Underflow ; 1-es jatekosnak 49862 penze van
+4 49932 Nutellas Gereblye ; ez vagy te
+2 49932 constexprts
+8 49412 VoidStar
+6 49832 Mighty Ganstaz
+9 49982 ELTE Sparrows
+10 50362 csolution
+7 50482 Nodus
+5 50222 RoomOneOOne
+3 49982 giliszta
+pot 490 ; ennyi penzt lehet/lehetett nyerni
+blind 10 ; a bet merteke preflop, utana ennek 2-szerese
+cards 3 ; ennyi sor jon, a kozos kartyak (preflop ez 0, utana 3)
+4
+3
+6
+action 2 call ; az utolso esemeny, 2-es jatekos call-t mondott
+showdown 1 9 6 ; ezt a leosztast nem a 8-as nyerte, a kezeben 6 1 volt, egy par
+showdown 2 8 8
+showdown 8 6 5
+winner 10 6 3 ; a 10-es nyert 6 3-mal (2 par)
+.
+
+
+Itt egy masik pelda jatek kozbeni allapotrol:
+tick 337 20
+id 4
+cash 49870
+hand 7 4
+players 10
+4 49870 Nutellas Gereblye
+9 49980 ELTE Sparrows
+2 49860 constexprts
+8 49310 VoidStar
+5 50220 RoomOneOOne
+3 49980 giliszta
+10 50550 csolution
+1 49860 Input Underflow
+7 50470 Nodus
+6 49830 Mighty Ganstaz
+pot 70
+blind 10
+to_call 20 ; ennyibe kerul ha call-t mondasz, ha mar fold-oltal, akkor nincs ilyen sor
+cards 0
+action 5 fold
+fold 5 7 1 ; ha az action 'fold' volt, latszik, mit dobott el, itt az 5-os bedobta a 7 1-es kartyait
+next 3 ; 3-as jatekos jon, ha itt 4-es lenne, te jonnel.
+.
+
+Tehat:
+'to_call' csak akkor jon, ha meg nem foldoltal
+'action' nem jon uj leosztasnal
+'next' vagy 'winner' kozul mindig az egyik van
+'fold' akkor jon, ha az 'action' is 'fold'
+'winner' eseten lehet nehany 'showdown' sor is. Ha a nyertesen kivul mindenki mas 'fold'-olt, akkor nincs 'showdown'.
