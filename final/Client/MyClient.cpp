@@ -296,7 +296,9 @@ int doPreFlopLepkepzes(int hand1, int hand2) {
     if (hand[0] >= 7 && hand[1] >= 7) {
         return 4;
     }
-    if (hand[0] >= 4 && hand[1] >= 7)
+    if (hand[0] >= 4 && hand[1] >= 7) {
+        return 5;
+    }
 
     return 6;
 }
