@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
 	}
 	CLIENT *pClient = CreateClient();
 	/* for debugging:  */
-	std::ifstream debug_file("Client/test_0.txt");
+	std::ifstream debug_file("Client/test_0.txt-no-debug");
 	if (debug_file.is_open())
 	{
 		std::string line;

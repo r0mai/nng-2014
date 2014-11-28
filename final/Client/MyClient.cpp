@@ -15,6 +15,8 @@
 
 const char *CommandList[]={ "check", "call", "bet" };
 
+enum Command { CHECK, CALL, BET };
+
 class MYCLIENT : public CLIENT
 {
 public:
@@ -39,10 +41,39 @@ struct Player {
 };
 typedef std::vector<Player> Players;
 
+Command getPreflopCommand(int hand1, int hand2) {
+	if (hand1 == hand2) {
+		if (hand1 >= 7) {
+			return BET;
+		} else if (hand1 >= 4) {
+			return CALL;
+		} else {
+			return CHECK;
+		}
+	} else {
+		if (hand1 >= 8 && hand2 >= 8) {
+			return BET;
+		} else if (hand1 >= 7 && hand2 >= 7) {
+			return CALL;
+		} else {
+			return CHECK;
+		}
+	}
+}
+
+std::string commandToString(Command c) {
+	if (c == CHECK) { return "check"; }
+	else if (c == BET) { return "bet"; }
+	else if (c == CALL) { return "call"; }
+	else return "check";
+}
+
 std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
 {
 
 	using boost::starts_with;
+
+	std::cout << "in HandleServerResponse" << std::endl;
 
 	if (response.size() == 0) {
 		return "";
@@ -123,9 +154,13 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
 		}
 	}
 	if (next == our_id) {
-		std::cout << "Mi jovunk!" << std::endl;
 		//Mi jovunk!!!
-		return "";
+		std::cout << "Mi jovunk! cash = " << our_cash << std::endl;
+		if (cards.size() == 0) {
+			return commandToString(getPreflopCommand(hand1, hand2));
+		} else {
+			return commandToString(CALL);
+		}
 	} else {
 		std::cout << "Nem mi jovunk!" << std::endl;
 		//Nem mi jovunk :(
