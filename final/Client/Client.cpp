@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
 	}
 	CLIENT *pClient = CreateClient();
 	/* for debugging:  */
-	std::ifstream debug_file("test.txt");
+	std::ifstream debug_file("Client/test_0.txt-no-debug");
 	if (debug_file.is_open())
 	{
 		std::string line;
@@ -172,6 +172,8 @@ int main(int argc, char* argv[])
 		}
 		std::string resp = pClient->DebugResponse(full);
 		std::cout<<"response: "<<resp <<std::endl;
+	} else {
+		std::cout << "No debugging" << std::endl;
 	}
 	/**/
 	
@@ -185,5 +187,6 @@ int main(int argc, char* argv[])
 	delete pClient;
 	return 0;
 }
+
 
 
