@@ -12,7 +12,8 @@
     }} while(false)
 
 #define DEBUG_PRINT(X) std::cout << #X << " = " << (X) << std::endl
-// sample
+
+int doPreFlopLepkepzes(int hand1, int hand2);
 
 const char *CommandList[]={ "check", "call", "bet" };
 
@@ -67,7 +68,7 @@ static const std::map<Combination, matrix> POST_LOOKUP = {
         }
     },
     {Null,
-        {{{CHECK, CHECK, CHECK, CHECK}}} 
+        {{{CHECK, CHECK, CHECK, CHECK}}}
     }
 };
 
@@ -96,24 +97,13 @@ struct Player {
 };
 typedef std::vector<Player> Players;
 
-Command getPreflopCommand(int hand1, int hand2) {
-    if (hand1 == hand2) {
-        if (hand1 >= 7) {
-            return BET;
-        } else if (hand1 >= 4) {
-            return CALL;
-        } else {
-            return CHECK;
-        }
-    } else {
-        if (hand1 >= 8 && hand2 >= 8) {
-            return BET;
-        } else if (hand1 >= 7 && hand2 >= 7) {
-            return CALL;
-        } else {
-            return CHECK;
-        }
+Command getPreflopCommand(int hand1, int hand2, int betCount) {
+    int lekep = doPreFlopLepkepzes(hand1, hand2);
+    if (betCount >= PRE_LOOKUP[lekep].size()) {
+        warassert(false && "getPreflopCommand outindex");
+        return CALL;
     }
+    return PRE_LOOKUP[lekep][betCount];
 }
 
 std::string commandToString(Command c) {
@@ -164,7 +154,7 @@ std::tuple<int, int> doPostFlopLepkepzes(
     }
     }
 
-
+    return std::make_tuple(-1, -1);
 }
 
 int doPreFlopLepkepzes(int hand1, int hand2) {
@@ -289,7 +279,8 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
         //Mi jovunk!!!
         std::cout << "Mi jovunk! cash = " << our_cash << std::endl;
         if (cards.size() == 0) {
-            return commandToString(getPreflopCommand(hand1, hand2));
+            return commandToString(
+		    getPreflopCommand(hand1, hand2, to_call/blind));
         } else {
             return commandToString(CALL);
         }
