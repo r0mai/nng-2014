@@ -317,8 +317,6 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
 
     using boost::starts_with;
 
-    std::cout << "in HandleServerResponse" << std::endl;
-
     if (response.size() == 0) {
         return "";
     }
@@ -390,9 +388,7 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
 
 
     int next = -1;
-    std::cout << "response : ";
     for (unsigned i = c; i < response.size() - 1; ++i) {
-        std::cout << i;
         if (starts_with(response[i], "action")) {
             if (boost::ends_with(response[i], "bet")) {
                 doBet();
@@ -410,9 +406,6 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
             warassert(false && "unknown command");
         }
     }
-    std::cout << std::endl;
-    DEBUG_PRINT(betCount);
-    DEBUG_PRINT(preFlop);
     if (next == our_id) {
         //Mi jovunk!!!
         std::cout << "Mi jovunk! cash = " << our_cash << std::endl;
@@ -420,7 +413,7 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
             auto c = commandToString(
 		    getPreflopCommand(hand1, hand2, betCount));
             std::cout << "Sent before flop: " << c << " " << hand1 <<
-                " " << hand2 << std::endl;
+                " " << hand2 << " betCount = " << betCount << std::endl;
             return c;
         } else {
             auto c = commandToString(
@@ -429,7 +422,7 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
                             hand1, hand2, cards[0], cards[1], cards[2]),
                     betCount));
             std::cout << "Sent after flop: " << c << " " << hand1 <<
-                " " << hand2 << std::endl;
+                " " << hand2 << " betCount = " << betCount <<  std::endl;
             return c;
         }
     } else {
