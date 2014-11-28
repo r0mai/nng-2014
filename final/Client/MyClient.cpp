@@ -425,12 +425,20 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
         } else if (starts_with(response[i], "winner")) {
             printRanking(players);
             if (starts_with(response[i], "winner 4")) {
-                currentHandFile << "WE WON! " <<
-                    response[i] << " pot = " << pot << std::endl;
+                currentHandFile << "WE WON! ";
             } else {
-                currentHandFile << "WE didn't win :( " <<
-                    response[i] << " pot = " << pot << std::endl;
+                currentHandFile << "WE didn't win :( ";
             }
+            int who, h1, h2;
+            parseWithStream(response[i], tmp, who, h1, h2);
+            if (cards.size() == 3) {
+                auto proj =
+                    doPostFlopLepkepzes(h1, h2, cards[0], cards[1], cards[2]);
+                currentHandFile << "with " << std::get<0>(proj);
+            }
+            currentHandFile << " " << response[i] <<
+                " pot = " << pot << std::endl;
+
         } else if (starts_with(response[i], "showdown")) {
 
         } else {
