@@ -76,19 +76,32 @@ static const std::map<Combination, matrix> POST_LOOKUP = {
 class MYCLIENT : public CLIENT
 {
 public:
-    MYCLIENT();
-protected:
     virtual std::string
         HandleServerResponse(std::vector<std::string> &ServerResponse);
     virtual std::string
         GetPassword() { return std::string("4APCtg"); } // Nutellas Gereblye
     virtual bool
         NeedDebugLog() { return true; }
-};
 
-MYCLIENT::MYCLIENT()
-{
-}
+    void startHand(int newHandTick) {
+        betCount = 0;
+        currentHandTick = newHandTick;
+        preFlop = true;
+    }
+
+    void flopStarted() {
+        betCount = 0;
+        preFlop = false;
+    }
+
+    void doBet() {
+        betCount = std::min(4, betCount + 1);
+    }
+
+    int betCount = 0;
+    int currentHandTick = -1;
+    bool preFlop = true;
+};
 
 struct Player {
     int id;
@@ -206,6 +219,10 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
     parseWithStream(response[c++], tmp, tick, hand_tick);
     warassert(tmp == "tick");
 
+    if (hand_tick != currentHandTick) {
+        startHand(currentHandTick);
+    }
+
     parseWithStream(response[c++], tmp, our_id);
     warassert(tmp == "id");
 
@@ -249,6 +266,10 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
 
     warassert(card_count == 0 || card_count == 3);
 
+    if (preFlop && card_count == 3) {
+        flopStarted();
+    }
+
     std::vector<int> cards(card_count);
     for (unsigned i = 0; i < card_count; ++i) {
         parseWithStream(response[c++], cards[i]);
@@ -260,7 +281,9 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
     for (unsigned i = c; i < response.size() - 1; ++i) {
         std::cout << i;
         if (starts_with(response[i], "action")) {
-
+            if (boost::ends_with(response[i], "bet")) {
+                doBet();
+            }
         } else if (starts_with(response[i], "fold")) {
 
         } else if (starts_with(response[i], "next")) {
@@ -280,7 +303,7 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
         std::cout << "Mi jovunk! cash = " << our_cash << std::endl;
         if (cards.size() == 0) {
             return commandToString(
-		    getPreflopCommand(hand1, hand2, to_call/blind));
+		    getPreflopCommand(hand1, hand2, betCount));
         } else {
             return commandToString(CALL);
         }
