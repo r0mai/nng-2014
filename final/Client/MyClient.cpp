@@ -451,7 +451,9 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
                             hand1, hand2, cards[0], cards[1], cards[2]);
             auto c = commandToString(getPostflopCommand(proj, betCount));
             std::cout << "Sent after flop: " << c << " " << hand1 <<
-                " " << hand2 << " betCount = " << betCount << " : " <<
+                " " << hand2 <<
+                "(" << cards[0] << " " << cards[1] << " " << cards[2] <<
+                ") betCount = " << betCount << " : " <<
                 std::get<0>(proj) << std::endl;
             return c;
         }
