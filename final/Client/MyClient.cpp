@@ -298,6 +298,8 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
         }
     }
     std::cout << std::endl;
+    DEBUG_PRINT(betCount);
+    DEBUG_PRINT(preFlop);
     if (next == our_id) {
         //Mi jovunk!!!
         std::cout << "Mi jovunk! cash = " << our_cash << std::endl;
