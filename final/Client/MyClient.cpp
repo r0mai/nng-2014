@@ -29,7 +29,7 @@ static const std::vector<command_vector> PRE_LOOKUP = {
     {CALL, CALL, CHECK, CHECK},
     {CALL, CALL, CALL, CALL},
     {CHECK, CHECK, CHECK, CHECK}
-}
+};
 
 static const std::map<Combination, matrix> POST_LOOKUP = {
     {AllTheSame, 
