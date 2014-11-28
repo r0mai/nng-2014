@@ -296,7 +296,7 @@ int doPreFlopLepkepzes(int hand1, int hand2) {
     if (hand[0] >= 7 && hand[1] >= 7) {
         return 4;
     }
-    if (hand[0] >= 4 && hand[1] >= 7) {
+    if (hand[0] >= 6 && hand[1] >= 7) {
         return 5;
     }
 
@@ -318,6 +318,8 @@ void printRanking(Players players) {
 
 std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
 {
+
+    static std::ofstream currentHandFile("currentHand.txt");
 
     using boost::starts_with;
 
@@ -345,6 +347,8 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
 
     parseWithStream(response[c++], tmp, hand1, hand2);
     warassert(tmp == "hand");
+
+    currentHandFile << hand1 << " " << hand2 << std::endl;
 
     parseWithStream(response[c++], tmp, player_count);
     warassert(tmp == "players");
@@ -403,6 +407,13 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
             warassert(tmp == "next");
         } else if (starts_with(response[i], "winner")) {
             printRanking(players);
+            if (starts_with(response[i], "winner 4")) {
+                currentHandFile << "WE WON! " <<
+                    response[i] << " pot = " << pot << std::endl;
+            } else {
+                currentHandFile << "WE didn't win :( " <<
+                    response[i] << " pot = " << pot << std::endl;
+            }
         } else if (starts_with(response[i], "showdown")) {
 
         } else {
@@ -429,7 +440,6 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
             return c;
         }
     } else {
-        std::cout << "Nem mi jovunk!\n" << std::endl;
         //Nem mi jovunk :(
         return "";
     }
