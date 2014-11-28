@@ -30,6 +30,7 @@ static const std::vector<command_vector> PRE_LOOKUP = {
     {BET, CALL, CALL, CALL, CALL},
     {CALL, CALL, CHECK, CHECK, CHECK},
     {CALL, CALL, CALL, CHECK, CHECK },
+    {CALL, CHECK, CHECK, CHECK, CHECK},
     {CHECK, CHECK, CHECK, CHECK, CHECK}
 };
 
@@ -295,8 +296,9 @@ int doPreFlopLepkepzes(int hand1, int hand2) {
     if (hand[0] >= 7 && hand[1] >= 7) {
         return 4;
     }
+    if (hand[0] >= 4 && hand[1] >= 7)
 
-    return 5;
+    return 6;
 }
 
 void printRanking(Players players) {
