@@ -120,6 +120,11 @@ Command getPreflopCommand(int hand1, int hand2, int betCount) {
     return PRE_LOOKUP[lekep][betCount];
 }
 
+Command getPostflopCommand(std::tuple<Combination, int, int> t, int betCount) {
+    auto map = POST_LOOKUP;
+    return map[std::get<0>(t)][std::get<1>(t)][std::get<2>(t)][betCount];
+}
+
 std::string commandToString(Command c) {
     if (c == CHECK) { return "check"; }
     else if (c == BET) { return "bet"; }
@@ -415,7 +420,11 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
             return commandToString(
 		    getPreflopCommand(hand1, hand2, betCount));
         } else {
-            return commandToString(CALL);
+            return commandToString(
+                    getPostflopCommand(
+                        doPostFlopLepkepzes(
+                            hand1, hand2, cards[0], cards[1], cards[2]),
+                    betCount));
         }
     } else {
         std::cout << "Nem mi jovunk!" << std::endl;
