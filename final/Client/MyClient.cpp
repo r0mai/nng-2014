@@ -348,8 +348,10 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
     parseWithStream(response[c++], tmp, tick, hand_tick);
     warassert(tmp == "tick");
 
+    bool newHand = false;
     if (hand_tick != currentHandTick) {
-        startHand(currentHandTick);
+        startHand(hand_tick);
+        newHand = true;
     }
 
     parseWithStream(response[c++], tmp, our_id);
@@ -361,7 +363,9 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
     parseWithStream(response[c++], tmp, hand1, hand2);
     warassert(tmp == "hand");
 
-    currentHandFile << hand1 << " " << hand2 << std::endl;
+    if (newHand) {
+        currentHandFile << hand1 << " " << hand2 << std::endl;
+    }
 
     parseWithStream(response[c++], tmp, player_count);
     warassert(tmp == "players");
