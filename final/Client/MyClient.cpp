@@ -63,23 +63,23 @@ static const std::map<Combination, matrix> POST_LOOKUP = {
     },
     {Drill,
         {
-            {{CALL, CHECK, CHECK, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK, CHECK}},
+            {{CHECK, CHECK, CHECK, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK, CHECK}},
             {{BET, CALL, CHECK, CHECK, CHECK}, {BET, CALL, CALL, CHECK, CHECK}},
             {{BET, BET, BET, BET, CALL}, {BET, BET, CALL, CALL, CALL}, {BET, CALL, CALL, CALL, CALL}}
         }
     },
     {DoublePair,
         {
-            {{BET, CALL, CALL, CHECK, CHECK}, {CALL, CALL, CHECK, CHECK, CHECK}},
-            {{BET, CALL, CALL, CHECK, CHECK}, {BET, CALL, CALL, CHECK, CHECK}, {CALL, CALL, CALL, CHECK, CHECK}},
-            {{CALL, CALL, CHECK, CHECK, CHECK}, {CALL, CHECK, CHECK, CHECK, CHECK}}
+            {{BET, CALL, CALL, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK, CHECK}},
+            {{BET, CALL, CALL, CHECK, CHECK}, {BET, CALL, CHECK, CHECK, CHECK}, {CHECK, CALL, CALL, CHECK, CHECK}},
+            {{CHECK, CALL, CHECK, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK, CHECK}}
         }
     },
     {Pair,
         {
             {{CHECK, CHECK, CHECK, CHECK, CHECK}},
-            {{CALL, CHECK, CHECK, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK, CHECK}},
-            {{CALL, CHECK, CHECK, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK, CHECK}}
+            {{CHECK, CALL, CHECK, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK, CHECK}},
+            {{CHECK, CALL, CHECK, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK, CHECK}}
         }
     },
     {Null,
@@ -309,7 +309,7 @@ int doPreFlopLepkepzes(int hand1, int hand2) {
     if (hand[0] >= 7 && hand[1] >= 7) {
         return 4;
     }
-    if (hand[0] >= 6 && hand[1] >= 7) {
+    if (hand[0] >= 5 && hand[1] >= 9) {
         return 5;
     }
 
