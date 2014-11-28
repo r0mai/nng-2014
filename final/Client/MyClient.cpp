@@ -25,7 +25,7 @@ typedef std::vector<Command> command_vector;
 typedef std::vector<std::vector<command_vector> > matrix;
 
 static const std::vector<command_vector> PRE_LOOKUP = {
-    {BET, BET, CALL, CALL, CALL},
+    {BET, BET, CALL, CHECK, CHECK},
     {BET, BET, BET, CALL, CALL},
     {BET, CALL, CALL, CALL, CALL},
     {CALL, CALL, CHECK, CHECK, CHECK},
