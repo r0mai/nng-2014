@@ -255,7 +255,7 @@ std::tuple<Combination, int, int> doPostFlopLepkepzes(
             return std::make_tuple(Drill, 2, 0);
         }
         // XYZ WW
-        if(flop[2] < hand[0])
+        if(flop[2] < hand[0] && ( hand[0] == 8 || hand[0] == 9 ))
         {
             return std::make_tuple(Pair, 2, 0);
         }
