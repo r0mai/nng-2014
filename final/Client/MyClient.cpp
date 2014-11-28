@@ -355,7 +355,6 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
             players[i].name += name + " ";
         }
     }
-    printRanking(players);
 
     int pot, blind;
 
@@ -399,7 +398,7 @@ std::string MYCLIENT::HandleServerResponse(std::vector<std::string> &response)
             parseWithStream(response[i], tmp, next);
             warassert(tmp == "next");
         } else if (starts_with(response[i], "winner")) {
-
+            printRanking(players);
         } else if (starts_with(response[i], "showdown")) {
 
         } else {
