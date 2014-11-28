@@ -23,47 +23,47 @@ typedef std::vector<Command> command_vector;
 typedef std::vector<std::vector<command_vector> > matrix;
 
 static const std::vector<command_vector> PRE_LOOKUP = {
-    {BET, BET, CALL, CALL},
-    {BET, BET, BET, CALL},
-    {BET, CALL, CALL, CALL},
-    {CALL, CALL, CHECK, CHECK},
-    {CALL, CALL, CALL, CALL},
-    {CHECK, CHECK, CHECK, CHECK}
+    {BET, BET, CALL, CALL, CALL},
+    {BET, BET, BET, CALL, CALL},
+    {BET, CALL, CALL, CALL, CALL},
+    {CALL, CALL, CHECK, CHECK, CHECK},
+    {CALL, CALL, CALL, CHECK, CHECK },
+    {CHECK, CHECK, CHECK, CHECK, CHECK}
 };
 
 static const std::map<Combination, matrix> POST_LOOKUP = {
     {AllTheSame, 
-        {{{BET, BET, BET, BET }}}
+        {{{BET, BET, BET, BET, CALL}}}
     },
     {Full,
         {
-            {{BET, BET, CALL, CALL}},
-            {{BET, BET, BET, CALL}, {BET, BET, CALL, CALL}},
-            {{BET, BET, BET, CALL}, {BET, BET, BET, BET}}
+            {{BET, BET, CALL, CALL, CALL}},
+            {{BET, BET, BET, CALL, CALL}, {BET, BET, CALL, CALL, CALL}},
+            {{BET, BET, BET, CALL, CALL}, {BET, BET, BET, BET, CALL}}
         } 
     },
     {Poker,
-        {{{BET, BET, BET, CALL}, {BET, BET, BET, BET}}} 
+        {{{BET, BET, BET, CALL, CALL}, {BET, BET, BET, BET, CALL}}} 
     },
     {Drill,
         {
-            {{CALL, CHECK, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK}},
-            {{BET, CALL, CHECK, CHECK}, {BET, CALL, CALL, CHECK}},
-            {{BET, BET, BET, BET}, {BET, BET, CALL, CALL}, {BET, CALL, CALL, CALL}}
+            {{CALL, CHECK, CHECK, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK, CHECK}},
+            {{BET, CALL, CHECK, CHECK, CHECK}, {BET, CALL, CALL, CHECK, CHECK}},
+            {{BET, BET, BET, BET, CALL}, {BET, BET, CALL, CALL, CALL}, {BET, CALL, CALL, CALL, CALL}}
         }
     },
     {DoublePair,
         {
-            {{BET, CALL, CALL, CHECK}, {CALL, CALL, CHECK, CHECK}},
-            {{BET, CALL, CALL, CALL}, {BET, CALL, CALL, CHECK}, {CALL, CALL, CALL, CHECK}},
-            {{CALL, CALL, CHECK, CHECK}, {CALL, CHECK, CHECK, CHECK}}
+            {{BET, CALL, CALL, CHECK, CHECK}, {CALL, CALL, CHECK, CHECK, CHECK}},
+            {{BET, CALL, CALL, CHECK, CHECK}, {BET, CALL, CALL, CHECK, CHECK}, {CALL, CALL, CALL, CHECK, CHECK}},
+            {{CALL, CALL, CHECK, CHECK, CHECK}, {CALL, CHECK, CHECK, CHECK, CHECK}}
         }
     },
     {Pair,
         {
-            {{CHECK, CHECK, CHECK, CHECK}},
-            {{CALL, CHECK, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK}},
-            {{CALL, CHECK, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK}}
+            {{CHECK, CHECK, CHECK, CHECK, CHECK}},
+            {{CALL, CHECK, CHECK, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK, CHECK}},
+            {{CALL, CHECK, CHECK, CHECK, CHECK}, {CHECK, CHECK, CHECK, CHECK, CHECK}}
         }
     },
     {Null,
