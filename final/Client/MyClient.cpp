@@ -209,7 +209,7 @@ std::tuple<Combination, int, int> doPostFlopLepkepzes(
             }
 
             // XXZ YY
-            return std::make_tuple(DoublePair, 0, hand[0] > flop[2]);
+            return std::make_tuple(DoublePair, 0, hand[0] < flop[2]);
         }
         // no pair hand
         if(flop[0] == hand[0] && flop[2] == hand[1])
